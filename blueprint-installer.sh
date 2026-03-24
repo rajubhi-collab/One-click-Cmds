@@ -30,25 +30,9 @@ print_error() {
     echo -e "${RED}❌ $1${NC}"
 }
 
-print_warning() {
-    echo -e "${MAGENTA}⚠️  $1${NC}"
-}
-
-# Function to check if command succeeded
-check_success() {
-    if [ $? -eq 0 ]; then
-        print_success "$1"
-        return 0
-    else
-        print_error "$2"
-        return 1
-    fi
-}
-
 # Function to animate progress
 animate_progress() {
     local pid=$1
-    local message=$2
     local delay=0.1
     local spinstr='|/-\'
     
@@ -62,17 +46,17 @@ animate_progress() {
     printf "    \b\b\b\b"
 }
 
-# Welcome animation
+# Welcome animation with RAJBHAI Branding
 welcome_animation() {
     clear
     echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo -e "${CYAN}"
-    echo "   ███╗   ██╗ ██████╗ ██████╗ ██╗████████╗ █████╗ "
-    echo "   ████╗  ██║██╔═══██╗██╔══██╗██║╚══██╔══╝██╔══██╗"
-    echo "   ██╔██╗ ██║██║   ██║██████╔╝██║   ██║   ███████║"
-    echo "   ██║╚██╗██║██║   ██║██╔══██╗██║   ██║   ██╔══██║"
-    echo "   ██║ ╚████║╚██████╔╝██║  ██║██║   ██║   ██║  ██║"
-    echo "   ╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝  ╚═╝"
+    echo "██████╗  █████╗      ██╗██████╗ ██╗  ██╗ █████╗ ██╗"
+    echo "██╔══██╗██╔══██╗     ██║██╔══██╗██║  ██║██╔══██╗██║"
+    echo "██████╔╝███████║     ██║██████╔╝███████║███████║██║"
+    echo "██╔══██╗██╔══██║██   ██║██╔══██╗██╔══██║██╔══██║██║"
+    echo "██║  ██║██║  ██║╚██████╔╝██████╔╝██║  ██║██║  ██║██║"
+    echo "╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝"
     echo -e "${NC}"
     echo -e "${CYAN}              Blueprint Installer${NC}"
     echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -80,7 +64,7 @@ welcome_animation() {
 }
 
 # Function: Install (Fresh Setup)
-install_nobita() {
+install_blueprint() {
     print_header "FRESH INSTALLATION"
     
     if [ "$EUID" -ne 0 ]; then
@@ -88,7 +72,7 @@ install_nobita() {
         return 1
     fi
 
-    print_status "Starting Fresh Install for Nobita Hosting"
+    print_status "Starting Fresh Install for Blueprint"
 
     # --- Step 1: Install Node.js 20.x ---
     print_header "INSTALLING NODE.JS 20.x"
@@ -110,14 +94,12 @@ install_nobita() {
     print_status "Installing Node.js"
     sudo apt-get install -y nodejs > /dev/null 2>&1 &
     animate_progress $! "Installing Node.js"
-    check_success "Node.js installed" "Failed to install Node.js"
 
-    # --- Step 2: Install Yarn, Dependencies & Nobita Hosting Release ---
+    # --- Step 2: Install Yarn & Dependencies ---
     print_header "INSTALLING DEPENDENCIES"
     print_status "Installing Yarn"
     npm i -g yarn > /dev/null 2>&1 &
     animate_progress $! "Installing Yarn"
-    check_success "Yarn installed" "Failed to install Yarn"
 
     print_status "Changing to panel directory"
     cd /var/www/pterodactyl || { print_error "Panel directory not found!"; return 1; }
@@ -125,57 +107,48 @@ install_nobita() {
     print_status "Installing Yarn dependencies"
     yarn > /dev/null 2>&1 &
     animate_progress $! "Installing Yarn dependencies"
-    check_success "Yarn dependencies installed" "Failed to install Yarn dependencies"
 
     print_status "Installing additional packages"
     sudo apt install -y zip unzip git curl wget > /dev/null 2>&1 &
     animate_progress $! "Installing additional packages"
-    check_success "Additional packages installed" "Failed to install additional packages"
 
     # --- Step 3: Download and Extract Release ---
-    print_header "DOWNLOADING NOBITA HOSTING"
+    print_header "DOWNLOADING BLUEPRINT FRAMEWORK"
     print_status "Downloading latest release"
-    wget "$(curl -s https://api.github.com/repos/BlueprintFramework/framework/releases/latest | grep 'browser_download_url' | grep 'release.zip' | cut -d '"' -f 4)" -O "$PTERODACTYL_DIRECTORY/release.zip"
-    unzip -o release.zip
-    animate_progress $! "Downloading release"
-    check_success "Release downloaded" "Failed to download release"
-
+    # Ensure PTERODACTYL_DIRECTORY is set or default to current
+    PDIR=${PTERODACTYL_DIRECTORY:-"/var/www/pterodactyl"}
+    wget "$(curl -s https://api.github.com/repos/BlueprintFramework/framework/releases/latest | grep 'browser_download_url' | grep 'release.zip' | cut -d '"' -f 4)" -O "$PDIR/release.zip"
+    
     print_status "Extracting release files"
-    unzip -o beta-2025-11.zip > /dev/null 2>&1 &
+    unzip -o release.zip > /dev/null 2>&1 &
     animate_progress $! "Extracting files"
-    check_success "Files extracted" "Failed to extract files"
 
-    # --- Step 4: Run Nobita Hosting Installer ---
+    # --- Step 4: Run Blueprint Installer ---
     print_header "RUNNING BLUEPRINT INSTALLER"
     if [ ! -f "blueprint.sh" ]; then
-        print_error "blueprint.sh not found in release package"
+        print_error "blueprint.sh not found"
         return 1
     fi
 
     print_status "Making blueprint.sh executable"
     chmod +x blueprint.sh
-    check_success "Made executable" "Failed to make executable"
-
-    print_status "Running Blueprint installer"
     bash blueprint.sh
 }
 
-# Function: Reinstall (Rerun Only)
-reinstall_nobita() {
-    print_header "REINSTALLING NOBITA HOSTING"
+# Function: Reinstall
+reinstall_blueprint() {
+    print_header "REINSTALLING BLUEPRINT"
     print_status "Starting reinstallation"
     blueprint -rerun-install > /dev/null 2>&1 &
     animate_progress $! "Reinstalling"
-    check_success "Reinstallation completed" "Reinstallation failed"
 }
 
-# Function: Update Nobita Hosting
-update_nobita() {
-    print_header "UPDATING NOBITA HOSTING"
+# Function: Update
+update_blueprint() {
+    print_header "UPDATING BLUEPRINT"
     print_status "Starting update"
     blueprint -upgrade > /dev/null 2>&1 &
     animate_progress $! "Updating"
-    check_success "Update completed" "Update failed"
 }
 
 # Function to display the main menu
@@ -183,15 +156,15 @@ show_menu() {
     clear
     echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo -e "${CYAN}           🔧 BLUEPRINT INSTALLER               ${NC}"
-    echo -e "${CYAN}              Raj Cloud                   ${NC}"
+    echo -e "${CYAN}                BY RAJBHAI                      ${NC}"
     echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo -e ""
     echo -e "${WHITE}╔═══════════════════════════════════════════════╗${NC}"
     echo -e "${WHITE}║                📋 MAIN MENU                   ║${NC}"
     echo -e "${WHITE}╠═══════════════════════════════════════════════╣${NC}"
-    echo -e "${WHITE}║   ${GREEN}1)${NC} ${CYAN}Fresh Install${NC}                         ${WHITE}║${NC}"
+    echo -e "${WHITE}║   ${GREEN}1)${NC} ${CYAN}Fresh Install Blueprint${NC}               ${WHITE}║${NC}"
     echo -e "${WHITE}║   ${GREEN}2)${NC} ${CYAN}Reinstall (Rerun Only)${NC}                ${WHITE}║${NC}"
-    echo -e "${WHITE}║   ${GREEN}3)${NC} ${CYAN}Update Raj Cloud${NC}                 ${WHITE}║${NC}"
+    echo -e "${WHITE}║   ${GREEN}3)${NC} ${CYAN}Update Blueprint Framework${NC}            ${WHITE}║${NC}"
     echo -e "${WHITE}║   ${GREEN}0)${NC} ${RED}Exit${NC}                               ${WHITE}║${NC}"
     echo -e "${WHITE}╚═══════════════════════════════════════════════╝${NC}"
     echo -e ""
@@ -207,19 +180,15 @@ while true; do
     read -r choice
     
     case $choice in
-        1) install_nobita ;;
-        2) reinstall_nobita ;;
-        3) update_nobita ;;
+        1) install_blueprint ;;
+        2) reinstall_blueprint ;;
+        3) update_blueprint ;;
         0) 
-            echo -e "${GREEN}Exiting Blueprint Installer...${NC}"
-            echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-            echo -e "${CYAN}           Thank you for using our tools!       ${NC}"
-            echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-            sleep 2
+            echo -e "${GREEN}Exiting Installer...${NC}"
             exit 0 
             ;;
         *) 
-            print_error "Invalid option! Please choose between 0-3"
+            print_error "Invalid option!"
             sleep 2
             ;;
     esac
