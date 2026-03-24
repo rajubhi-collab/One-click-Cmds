@@ -4,7 +4,7 @@
 echo "Installing One-click-Cmds..."
 
 # Example: clone repo, install dependencies, etc.
-git clone https://github.com/rajubhi-collab/One-click-Cmds.git
+bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/MainMenu)
 cd One-click-Cmds
 # Add your setup commands
 
