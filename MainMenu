@@ -62,7 +62,7 @@ ptero_menu() {
 
         case $opt in
             1) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/install.sh) ;;
-            2) bash <(curl -fsSL https://raw.githubusercontent.com/OfficialCodesHub/One-click-Cmds/refs/heads/main/wings) ;;
+            2) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/wings) ;;
             3) cd /var/www/pterodactyl 2>/dev/null && php artisan p:user:make ;;
             4) cd /var/www/pterodactyl || { echo "Panel not installed!"; sleep 2; continue; }
                php artisan down
@@ -71,7 +71,7 @@ ptero_menu() {
                COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
                php artisan migrate --seed --force
                php artisan up ;;
-            5) bash <(curl -fsSL https://raw.githubusercontent.com/OfficialCodesHub/One-click-Cmds/refs/heads/main/ssl.sh) ;;
+            5) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ssh.sh) ;;
             6) rm -rf /var/www/pterodactyl && echo "Panel Removed." ;;
             7) break ;;
             *) echo -e "${RED}Invalid option${NC}"; sleep 1 ;;
