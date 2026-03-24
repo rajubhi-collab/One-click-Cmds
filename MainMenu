@@ -92,7 +92,7 @@ ptero_menu() {
 
         case $opt in
             1)
-                bash <(curl -fsSL https://raw.githubusercontent.com/OfficialCodesHub/One-click-Cmds/refs/heads/main/install.sh)
+                bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/install.sh)
                 read -p "Press Enter..."
                 ;;
             2)
