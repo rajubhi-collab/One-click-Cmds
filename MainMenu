@@ -54,7 +54,7 @@ intro() {
     typewriter "╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚══════╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═╝  ╚═╝"
     echo -e "${N}"
     echo ""
-    typewriter "🚀AyushTheWarrior MainMenu"
+    typewriter "🚀LORD_RAJBHAI MainMenu"
     sleep 1
     progress_bar
     clear
