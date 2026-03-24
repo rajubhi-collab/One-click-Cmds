@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # ===========================================
-# Secure SSH Setup + Custom MOTD - AyushTheWarrior
+# Secure SSH Setup + Custom MOTD - RAJBHAI
 # ===========================================
 
 clear
 
-echo -e "\033[1;36m🔐 AyushTheWarrior - Secure SSH Configuration\033[0m"
+echo -e "\033[1;36m🔐 RAJBHAI - Secure SSH Configuration\033[0m"
 echo -e "\033[1;37m--------------------------------------\033[0m"
 
 sleep 1
@@ -53,18 +53,17 @@ clear
 
 cat << "EOF"
 
-    _   __   __  _   _   ____  _   _ 
-   / \  \ \ / / | | | | / ___|| | | |
-  / _ \  \ V /  | | | | \___ \| |_| |
- / ___ \  | |   | |_| |  ___) |  _  |
-/_/   \_\ |_|    \___/  |____/|_| |_|
-
-                                                                                                                      
+ ██████╗  █████╗      ██╗██████╗ ██╗  ██╗ █████╗ ██╗
+ ██╔══██╗██╔══██╗     ██║██╔══██╗██║  ██║██╔══██╗██║
+ ██████╔╝███████║     ██║██████╔╝███████║███████║██║
+ ██╔══██╗██╔══██║██   ██║██╔══██╗██╔══██║██╔══██║██║
+ ██║  ██║██║  ██║╚█████╔╝██████╔╝██║  ██║██║  ██║██║
+ ╚═╝  ╚═╝╚═╝  ╚═╝ ╚════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝
 
 EOF
 
 echo -e "\033[1;32m🎉 SSH Configuration Completed Successfully!\033[0m"
-echo -e "\033[1;37m📌 AyushTheWarrior VPS setup completed.\033[0m"
+echo -e "\033[1;37m📌 RAJBHAI VPS setup completed.\033[0m"
 
 echo -e "\n\033[1;33m🔑 Please set your ROOT password below 👇\033[0m"
 sudo passwd root
