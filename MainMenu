@@ -101,7 +101,7 @@ while true; do banner
         3) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/003); pause ;;
         4) ptero_menu ;;
         5) bash <(curl -fsSL https://raw.githubusercontent.com/OfficialCodesHub/panels/refs/heads/main/panelsop); pause ;;
-        6) bash <(curl -fsSL https://raw.githubusercontent.com/OfficialCodesHub/One-click-Cmds/refs/heads/main/Blueprint%20%2B%20Addon%20Installer); pause ;;
+        6) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/blueprint-installer.sh); pause ;;
         7) bash <(curl -fsSL https://raw.githubusercontent.com/OfficialCodesHub/One-click-Cmds/refs/heads/main/lxd%20installer); pause ;;
         8) bash <(curl -fsSL https://raw.githubusercontent.com/OfficialCodesHub/One-click-Cmds/refs/heads/main/ssh.sh); pause ;;
         9) curl -fsSL https://tailscale.com/install.sh | sh; pause ;;
