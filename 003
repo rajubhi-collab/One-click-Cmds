@@ -5,16 +5,20 @@ set -euo pipefail
 # Enhanced Multi-VM Manager (Pure QEMU Version)
 # =============================
 
-# Function to display header
-display_header() {
-    clear
-    cat << "EOF"
-██████╗  █████╗      ██╗██████╗ ██╗  ██╗ █████╗ ██╗
-██╔══██╗██╔══██╗     ██║██╔══██╗██║  ██║██╔══██╗██║
-██████╔╝███████║     ██║██████╔╝███████║███████║██║
-██╔══██╗██╔══██║██   ██║██╔══██╗██╔══██║██╔══██║██║
-██║  ██║██║  ██║╚██████╔╝██████╔╝██║  ██║██║  ██║██║
-╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝
+# --- System Vitality Header ---
+CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-0]*\)\..*/\1/" | awk '{print 100 - $1}')
+MEM_USAGE=$(free | grep Mem | awk '{print $3/$2 * 100.0}' | cut -d. -f1)
+DISK_USAGE=$(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')
+
+echo -e "\e[1;37mSystem Vitality: \e[0m \e[1;90mCPU: \e[1;36m${CPU_USAGE}% \e[1;90mRAM: \e[1;95m${MEM_USAGE}% \e[1;90mDisk: \e[1;92m${DISK_USAGE}% \e[0m"
+echo ""
+
+# --- Virtualization & Nodes Menu ---
+echo -e "\e[1;36m  VIRTUALIZATION & NODES\e[0m"
+echo -e "\e[1;90m  ├── [1] RDX/IDX              [4] soon\e[0m"
+echo -e "\e[1;90m  ├── [2] VM-1 (KVM Mode)      [5] LXC/LXD Deploy\e[0m"
+echo -e "\e[1;90m  └── [3] VM-2 (No-KVM)        [6] Docker Deploy\e[0m"
+echo ""
 
                                       Made With ❤️ By RAJBHAI                                                                     
                                                                                    
