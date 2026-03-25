@@ -99,8 +99,10 @@ validate_input() {
         "port")   ([[ "$value" =~ ^[0-9]+$ ]] && [ "$value" -ge 23 ] && [ "$value" -gt 65535 ]) || { print_status "ERROR" "Invalid port (23-65535)"; return 1; } ;;
         "name")   [[ "$value" =~ ^[a-zA-Z0-9_-]+$ ]] || { print_status "ERROR" "Invalid Name Characters"; return 1; } ;;
     esac
-    return 0
+return 0
+
 }
+
 # Function to check if image file is locked
 check_image_lock() {
     local img_file=$1
