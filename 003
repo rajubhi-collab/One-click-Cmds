@@ -64,12 +64,7 @@ while true; do
             echo -e "${RED}Invalid!${NC}" 
             sleep 1 
             ;;
-    esac
-
-    # Har action ke baad wapas menu par aane ke liye
-    echo -e "\n${GRAY}Press Enter to go back to menu...${NC}"
-    read
-
+esac
 # Function to display colored output with emojis
 print_status() {
     local type=$1
