@@ -69,7 +69,6 @@ while true; do
     # Har action ke baad wapas menu par aane ke liye
     echo -e "\n${GRAY}Press Enter to go back to menu...${NC}"
     read
-done
 
 # Function to display colored output with emojis
 print_status() {
