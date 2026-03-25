@@ -82,16 +82,16 @@ ptero_menu() {
 # ===================== MAIN MENU =====================
 while true; do banner
     echo -e "${CYAN}────────────── MAIN MENU ──────────────${NC}"
-    echo -e "${GRAY} ├──${YELLOW} [1]${WHITE} Discord Server Link"
-    echo -e "${GRAY} ├──${YELLOW} [2]${WHITE} Proxmox VE (Docker) Install"
-    echo -e "${GRAY} ├──${YELLOW} [3]${WHITE} VM/KVM Installer"
-    echo -e "${GRAY} ├──${YELLOW} [4]${WHITE} Pterodactyl Panel Installer"
-    echo -e "${GRAY} ├──${YELLOW} [5]${WHITE} ALL MINECRAFT Panel Installer"
-    echo -e "${GRAY} ├──${YELLOW} [6]${WHITE} Blueprint + Addon Installer"
-    echo -e "${GRAY} ├──${YELLOW} [7]${WHITE} Lxd Installer"
-    echo -e "${GRAY} ├──${YELLOW} [8]${WHITE} SFTP Fixer"
-    echo -e "${GRAY} ├──${YELLOW} [9]${WHITE} Tailscale VPN Installer"
-    echo -e "${GRAY} └──${RED} [10] Exit${NC}"
+    echo -e "${GRAY} ├─${YELLOW} [1]${WHITE} Discord Server Link"
+    echo -e "${GRAY} ├─${YELLOW} [2]${WHITE} Proxmox VE (Docker) Install"
+    echo -e "${GRAY} ├─${YELLOW} [3]${WHITE} VM/KVM Installer"
+    echo -e "${GRAY} ├─${YELLOW} [4]${WHITE} Pterodactyl Panel Installer"
+    echo -e "${GRAY} ├─${YELLOW} [5]${WHITE} ALL MINECRAFT Panel Installer"
+    echo -e "${GRAY} ├─${YELLOW} [6]${WHITE} Blueprint + Addon Installer"
+    echo -e "${GRAY} ├─${YELLOW} [7]${WHITE} Lxd Installer"
+    echo -e "${GRAY} ├─${YELLOW} [8]${WHITE} SFTP Fixer"
+    echo -e "${GRAY} ├─${YELLOW} [9]${WHITE} Tailscale VPN Installer"
+    echo -e "${GRAY} └─${RED} [10] Exit${NC}"
     echo -e "${CYAN}────────────────────────────────────────${NC}"
     read -p "Select → " choice
 
@@ -108,4 +108,3 @@ while true; do banner
         10) echo -e "${GREEN}Exiting — RAJBHAI Control Panel${NC}"; exit 0 ;;
         *) echo -e "${RED}Invalid Option!${NC}"; sleep 1.5 ;;
     esac
-done
