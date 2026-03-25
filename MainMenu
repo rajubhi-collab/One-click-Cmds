@@ -91,7 +91,8 @@ while true; do banner
     echo -e "${GRAY} ├─${YELLOW} [7]${WHITE} Lxd Installer"
     echo -e "${GRAY} ├─${YELLOW} [8]${WHITE} SFTP Fixer"
     echo -e "${GRAY} ├─${YELLOW} [9]${WHITE} Tailscale VPN Installer"
-    echo -e "${GRAY} └─${RED} [10] Exit${NC}"
+    echo -e "${GRAY} ├─${YELLOW} [10]${WHITE} Extra"
+    echo -e "${GRAY} └─${RED} [11] Exit${NC}"
     echo -e "${CYAN}────────────────────────────────────────${NC}"
     read -p "Select → " choice
 
@@ -105,7 +106,8 @@ while true; do banner
         7) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/lxd%20installer); pause ;;
         8) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ssh.sh); pause ;;
         9) curl -fsSL https://tailscale.com/install.sh | sh; pause ;;
-        10) echo -e "${GREEN}Exiting — RAJBHAI Control Panel${NC}"; exit 0 ;;
+        10) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/tools/root.sh); pause ;;
+        11) echo -e "${GREEN}Exiting — RAJBHAI Control Panel${NC}"; exit 0 ;;
         *) echo -e "${RED}Invalid Option!${NC}"; sleep 1.5 ;;
     esac
 done
