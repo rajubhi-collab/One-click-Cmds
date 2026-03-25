@@ -51,7 +51,7 @@ case $opt in
     5) echo -e "\e[1;33mLXC Deploy: Coming Soon...\e[0m" ; sleep 2 ;;
     6) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/dd.sh) ;;
     *) echo -e "\e[1;31mInvalid Option!\e[0m" ; sleep 1 ;;
-  esac
+     esac
 }
 
 # Function to display colored output with emojis
