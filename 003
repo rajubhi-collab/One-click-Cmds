@@ -78,4 +78,4 @@ VM_DIR="${VM_DIR:-$HOME/vms}"
 mkdir -p "$VM_DIR"
 
 # Start the menu
-virt_menu
+ virt_menu
