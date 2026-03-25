@@ -165,7 +165,8 @@ validate_input() {
             ;;
         "size")
             if ! [[ "$value" =~ ^[0-9]+[GgMm]$ ]]; then
-                print_status "ERROR" "❌ Must be a size with unit (e.g., 100G, 512M)"
+                print_status "ERROR" "Must be a size with unit (e.g., 100G, 512M)"
+
                 return 1
             fi
             ;;
