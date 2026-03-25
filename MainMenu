@@ -87,7 +87,7 @@ while true; do banner
     echo -e "${GRAY} ├─${YELLOW} [3]${WHITE} VM/KVM Amd Installer"
     echo -e "${GRAY} ├─${YELLOW} [4]${WHITE} Pterodactyl Panel Installer"
     echo -e "${GRAY} ├─${YELLOW} [5]${WHITE} Theme Installer"
-    echo -e "${GRAY} ├─${YELLOW} [6]${WHITE} Blueprint + Addon Installer"
+    echo -e "${GRAY} ├─${YELLOW} [6]${WHITE} Blueprint Installer"
     echo -e "${GRAY} ├─${YELLOW} [7]${WHITE} Lxd Installer"
     echo -e "${GRAY} ├─${YELLOW} [8]${WHITE} SFTP Fixer"
     echo -e "${GRAY} ├─${YELLOW} [9]${WHITE} Tailscale VPN Installer"
