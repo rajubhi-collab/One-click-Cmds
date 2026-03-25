@@ -176,13 +176,6 @@ validate_input() {
             fi
             ;;
         "size")
-            if ! [[ "$value" =~ ^[0-9]+[GgMm]$ ]]; then
-                print_status "ERROR" "Must be a size with unit (e.g., 100G, 512M)"
-
-                return 1
-            fi
-            ;;
-        "port")
             if ! [[ "$value" =~ ^[0-9]+$ ]] || [ "$value" -lt 23 ] || [ "$value" -gt 65535 ]; then
                 print_status "ERROR" "❌ Must be a valid port number (23-65535)"
                 return 1
