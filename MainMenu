@@ -108,3 +108,4 @@ while true; do banner
         10) echo -e "${GREEN}Exiting — RAJBHAI Control Panel${NC}"; exit 0 ;;
         *) echo -e "${RED}Invalid Option!${NC}"; sleep 1.5 ;;
     esac
+done
