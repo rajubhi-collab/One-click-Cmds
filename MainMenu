@@ -109,4 +109,3 @@ while true; do banner
         *) echo -e "${RED}Invalid Option!${NC}"; sleep 1.5 ;;
     esac
 done
-
