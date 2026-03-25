@@ -6,12 +6,12 @@ WHITE='\033[1;37m'
 GRAY='\033[1;90m'
 GREEN='\033[1;32m'
 PURPLE='\033[1;35m'
+RED='\033[1;31m'
 NC='\033[0m'
 
 display_header() {
     clear
     echo -e "${CYAN}"
-    # Alignment fix karne ke liye spaces adjust kiye hain
     cat << "EOF"
  ██████╗  █████╗      ██╗██████╗ ██╗  ██╗  █████╗ ██╗
  ██╔══██╗██╔══██╗     ██║██╔══██╗██║  ██║ ██╔══██╗██║
@@ -24,39 +24,51 @@ EOF
     echo ""
 }
 
-# --- Accurate Stats Fix ---
-# Is formula se -10% wala error nahi aayega
-CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}' | cut -d. -f1)
-[ -z "$CPU_USAGE" ] && CPU_USAGE=0
-MEM_USAGE=$(free | grep Mem | awk '{print $3/$2 * 100.0}' | cut -d. -f1)
-DISK_USAGE=$(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')
+# Loop start taaki kaam ke baad menu wapas aaye
+while true; do
+    display_header
 
-# --- DISPLAY INTERFACE ---
-display_header
+    # --- Accurate Stats Calculation ---
+    CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}' | cut -d. -f1)
+    [ -z "$CPU_USAGE" ] && CPU_USAGE=0
+    MEM_USAGE=$(free | grep Mem | awk '{print $3/$2 * 100.0}' | cut -d. -f1)
+    DISK_USAGE=$(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')
 
-# System Vitality (Clean Alignment)
-echo -e "${WHITE}System Vitality: ${GRAY}CPU: ${CYAN}${CPU_USAGE}% ${GRAY}RAM: ${PURPLE}${MEM_USAGE}% ${GRAY}Disk: ${GREEN}${DISK_USAGE}%${NC}"
-echo ""
+    # System Vitality Display
+    echo -e "${WHITE}System Vitality: ${GRAY}CPU: ${CYAN}${CPU_USAGE}% ${GRAY}RAM: ${PURPLE}${MEM_USAGE}% ${GRAY}Disk: ${GREEN}${DISK_USAGE}%${NC}"
+    echo ""
 
-# Virtualization & Nodes Block
-echo -e "${CYAN}  VIRTUALIZATION & NODES${NC}"
-echo -e "${GRAY}  ├── [1] RDX/IDX              [4] Proxmox (Node-1)${NC}"
-echo -e "${GRAY}  ├── [2] VM-1 (KVM Mode)      [5] LXC/LXD Deploy${NC}"
-echo -e "${GRAY}  └── [3] VM-2 (No-KVM)        [6] Docker Deploy${NC}"
-echo ""
+    # Virtualization & Nodes Block
+    echo -e "${CYAN}  VIRTUALIZATION & NODES${NC}"
+    echo -e "${GRAY}  ├── [1] RDX/IDX              [4] Proxmox (Node-1)${NC}"
+    echo -e "${GRAY}  ├── [2] VM-1 (KVM Mode)      [5] LXC/LXD Deploy${NC}"
+    echo -e "${GRAY}  ├── [3] VM-2 (No-KVM)        [6] Docker Deploy${NC}"
+    echo -e "${GRAY}  │${NC}"
+    echo -e "${GRAY}  └── [0] Exit / Back${NC}"
+    echo ""
 
-# Selection Logic
-read -p "Select Option → " opt
+    read -p "Select Option → " opt
 
-case $opt in
-    1) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vps.sh) ;;
-    2) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vm.sh) ;;
-    3) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vm2.sh) ;;
-    4) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/proxmox.sh) ;;
-    5) echo -e "${PURPLE}Coming Soon...${NC}" ; sleep 2 ;;
-    6) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/dd.sh) ;;
-    *) echo -e "${RED}Invalid!${NC}" ; sleep 1 ;;
-esac
+    case $opt in
+        1) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vps.sh) ;;
+        2) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vm.sh) ;;
+        3) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vm2.sh) ;;
+        4) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/proxmox.sh) ;;
+        5) echo -e "${PURPLE}LXC Deploy Coming Soon...${NC}" ; sleep 2 ;;
+        6) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/dd.sh) ;;
+        0) 
+            echo -e "${RED}Exiting...${NC}"
+            exit 0 
+            ;;
+        *) 
+            echo -e "${RED}Invalid Option!${NC}" 
+            sleep 1 
+            ;;
+    esac
+    
+    echo -e "\n${GRAY}Press Enter to return to menu...${NC}"
+    read
+done
 
 # Function to display colored output with emojis
 print_status() {
