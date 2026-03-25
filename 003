@@ -1,13 +1,17 @@
 #!/bin/bash
 
-# ===========================================================
-# RAJBHAI Terminal Control Panel - VIRTUALIZATION EDITION
-# ===========================================================
+# --- COLORS ---
+CYAN='\033[1;36m'
+WHITE='\033[1;37m'
+GRAY='\033[1;90m'
+GREEN='\033[1;32m'
+PURPLE='\033[1;35m'
+NC='\033[0m'
 
 display_header() {
     clear
-    # RAJBHAI Logo in Cyan Color
-    echo -e "\e[1;36m"
+    echo -e "${CYAN}"
+    # Alignment fix karne ke liye spaces adjust kiye hain
     cat << "EOF"
  ██████╗  █████╗      ██╗██████╗ ██╗  ██╗  █████╗ ██╗
  ██╔══██╗██╔══██╗     ██║██╔══██╗██║  ██║ ██╔══██╗██║
@@ -16,31 +20,32 @@ display_header() {
  ██║  ██║██║  ██║╚██████╔╝██████╔╝██║  ██║ ██║  ██║██║
  ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝ ╚═╝  ╚═╝╚═╝
 EOF
-    echo -e "          \e[1;37mMade With ❤️ By RAJBHAI\e[0m"
-    echo
+    echo -e "          ${WHITE}Made With ❤️ By RAJBHAI${NC}"
+    echo ""
 }
 
-# --- Accurate Stats Calculation ---
-# CPU usage from /proc/stat for real-time accuracy
-CPU_USAGE=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {printf "%d", usage}')
+# --- Accurate Stats Fix ---
+# Is formula se -10% wala error nahi aayega
+CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}' | cut -d. -f1)
+[ -z "$CPU_USAGE" ] && CPU_USAGE=0
 MEM_USAGE=$(free | grep Mem | awk '{print $3/$2 * 100.0}' | cut -d. -f1)
 DISK_USAGE=$(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')
 
-# Display Everything
+# --- DISPLAY INTERFACE ---
 display_header
 
-# System Vitality Header (Screenshot Style)
-echo -e "\e[1;37mSystem Vitality: \e[0m \e[1;90mCPU: \e[1;36m${CPU_USAGE}% \e[1;90mRAM: \e[1;95m${MEM_USAGE}% \e[1;90mDisk: \e[1;92m${DISK_USAGE}% \e[0m"
+# System Vitality (Clean Alignment)
+echo -e "${WHITE}System Vitality: ${GRAY}CPU: ${CYAN}${CPU_USAGE}% ${GRAY}RAM: ${PURPLE}${MEM_USAGE}% ${GRAY}Disk: ${GREEN}${DISK_USAGE}%${NC}"
 echo ""
 
-# Virtualization & Nodes Menu
-echo -e "\e[1;36m  VIRTUALIZATION & NODES\e[0m"
-echo -e "\e[1;90m  ├── [1] RDX/IDX              [4] Proxmox (Node-1)\e[0m"
-echo -e "\e[1;90m  ├── [2] VM-1 (KVM Mode)      [5] LXC/LXD Deploy\e[0m"
-echo -e "\e[1;90m  └── [3] VM-2 (No-KVM)        [6] Docker Deploy\e[0m"
+# Virtualization & Nodes Block
+echo -e "${CYAN}  VIRTUALIZATION & NODES${NC}"
+echo -e "${GRAY}  ├── [1] RDX/IDX              [4] Proxmox (Node-1)${NC}"
+echo -e "${GRAY}  ├── [2] VM-1 (KVM Mode)      [5] LXC/LXD Deploy${NC}"
+echo -e "${GRAY}  └── [3] VM-2 (No-KVM)        [6] Docker Deploy${NC}"
 echo ""
 
-# --- Feature Logic ---
+# Selection Logic
 read -p "Select Option → " opt
 
 case $opt in
@@ -48,11 +53,10 @@ case $opt in
     2) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vm.sh) ;;
     3) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vm2.sh) ;;
     4) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/proxmox.sh) ;;
-    5) echo -e "\e[1;33mLXC Deploy: Coming Soon...\e[0m" ; sleep 2 ;;
+    5) echo -e "${PURPLE}Coming Soon...${NC}" ; sleep 2 ;;
     6) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/dd.sh) ;;
-    *) echo -e "\e[1;31mInvalid Option!\e[0m" ; sleep 1 ;;
-     esac
-}
+    *) echo -e "${RED}Invalid!${NC}" ; sleep 1 ;;
+esac
 
 # Function to display colored output with emojis
 print_status() {
