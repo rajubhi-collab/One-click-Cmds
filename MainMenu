@@ -100,7 +100,7 @@ while true; do banner
         2) docker run -itd --name proxmoxve --hostname pve --privileged --cgroupns=host --security-opt apparmor=unconfined --security-opt seccomp=unconfined -v /sys/fs/cgroup:/sys/fs/cgroup:rw -v /lib/modules:/lib/modules:ro -v /dev/fuse:/dev/fuse -v /sys/kernel/debug:/sys/kernel/debug -p 8006:8006 --restart unless-stopped rtedpro/proxmox:9.0.11; pause ;;
         3) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/003); pause ;;
         4) ptero_menu ;;
-        5) bash <(curl -fsSL https://raw.githubusercontent.com/OfficialCodesHub/panels/refs/heads/main/panelsop); pause ;;
+        5) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/thame/chang.sh); pause ;;
         6) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/blueprint-installer.sh); pause ;;
         7) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/lxd%20installer); pause ;;
         8) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ssh.sh); pause ;;
