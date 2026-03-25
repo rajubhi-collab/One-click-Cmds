@@ -9,6 +9,7 @@ PURPLE='\033[1;35m'
 RED='\033[1;31m'
 NC='\033[0m'
 
+# --- FUNCTION: HEADER ---
 display_header() {
     clear
     echo -e "${CYAN}"
@@ -24,14 +25,15 @@ EOF
     echo ""
 }
 
-# Loop Start: Taaki back option kaam kare
+# --- MAIN LOOP ---
 while true; do
     display_header
 
-    # Accurate Stats Calculation
-    CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}' | cut -d. -f1)
-    [ -z "$CPU_USAGE" ] && CPU_USAGE=0
-    MEM_USAGE=$(free | grep Mem | awk '{print $3/$2 * 100.0}' | cut -d. -f1)
+    # Accurate Stats Fix (Using simple top/free for compatibility)
+    CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}' | awk -F. '{print $1}')
+    [ -z "$CPU_USAGE" ] && CPU_USAGE="0"
+    
+    MEM_USAGE=$(free | grep Mem | awk '{print $3/$2 * 100.0}' | awk -F. '{print $1}')
     DISK_USAGE=$(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')
 
     # System Vitality Display
@@ -57,14 +59,21 @@ while true; do
         5) echo -e "${PURPLE}Coming Soon...${NC}" ; sleep 2 ;;
         6) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/dd.sh) ;;
         0) 
-            echo -e "${RED}Returning...${NC}"
+            echo -e "${RED}Returning to Main Menu...${NC}"
+            # Agar aap chahte hain ki ye MainMenu.txt par wapas jaye:
+            # bash MainMenu.txt 
             exit 0 
             ;;
         *) 
             echo -e "${RED}Invalid!${NC}" 
             sleep 1 
             ;;
-esac
+    esac
+
+    echo -e "\n${GRAY}Press Enter to go back...${NC}"
+    read
+done
+
 # Function to display colored output with emojis
 print_status() {
     local type=$1
