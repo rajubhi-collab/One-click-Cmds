@@ -24,11 +24,11 @@ EOF
     echo ""
 }
 
-# Loop start taaki kaam ke baad menu wapas aaye
+# Loop Start: Taaki back option kaam kare
 while true; do
     display_header
 
-    # --- Accurate Stats Calculation ---
+    # Accurate Stats Calculation
     CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}' | cut -d. -f1)
     [ -z "$CPU_USAGE" ] && CPU_USAGE=0
     MEM_USAGE=$(free | grep Mem | awk '{print $3/$2 * 100.0}' | cut -d. -f1)
@@ -44,7 +44,7 @@ while true; do
     echo -e "${GRAY}  ├── [2] VM-1 (KVM Mode)      [5] LXC/LXD Deploy${NC}"
     echo -e "${GRAY}  ├── [3] VM-2 (No-KVM)        [6] Docker Deploy${NC}"
     echo -e "${GRAY}  │${NC}"
-    echo -e "${GRAY}  └── [0] Exit / Back${NC}"
+    echo -e "${GRAY}  └── [0] Back / Exit${NC}"
     echo ""
 
     read -p "Select Option → " opt
@@ -54,19 +54,20 @@ while true; do
         2) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vm.sh) ;;
         3) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vm2.sh) ;;
         4) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/proxmox.sh) ;;
-        5) echo -e "${PURPLE}LXC Deploy Coming Soon...${NC}" ; sleep 2 ;;
+        5) echo -e "${PURPLE}Coming Soon...${NC}" ; sleep 2 ;;
         6) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/dd.sh) ;;
         0) 
-            echo -e "${RED}Exiting...${NC}"
+            echo -e "${RED}Returning...${NC}"
             exit 0 
             ;;
         *) 
-            echo -e "${RED}Invalid Option!${NC}" 
+            echo -e "${RED}Invalid!${NC}" 
             sleep 1 
             ;;
     esac
-    
-    echo -e "\n${GRAY}Press Enter to return to menu...${NC}"
+
+    # Har action ke baad wapas menu par aane ke liye
+    echo -e "\n${GRAY}Press Enter to go back to menu...${NC}"
     read
 done
 
