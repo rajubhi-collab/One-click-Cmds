@@ -66,6 +66,7 @@ case $opt in
     7) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/amd.txt) ;;
     *) echo -e "Invalid Option!" ; sleep 1 ;;
 esac
+
 # Function to display colored output with emojis
 print_status() {
     local type=$1
