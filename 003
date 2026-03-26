@@ -159,7 +159,6 @@ create_new_vm() {
             break
         fi
     done
-                3)
                     while true; do
                         read -s -p "🔑 Enter new password (current: ****): " new_password
                         new_password="${new_password:-$PASSWORD}"
