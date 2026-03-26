@@ -39,7 +39,7 @@ echo -e "${CYAN}  VIRTUALIZATION & NODES${NC}"
 echo -e "${GRAY}  ├── [1] RDX/IDX              [4] Proxmox (Node-1)${NC}"
 echo -e "${GRAY}  ├── [2] VM-1 (KVM Mode)      [5] LXC/LXD Deploy${NC}"
 echo -e "${GRAY}  ├── [3] VM-2 (No-KVM)        [6] Docker Deploy${NC}"
-echo -e "${GRAY}  └── [7] AMD              [0] Exit${NC}" # Added Option 7 and Exit
+echo -e "${GRAY}  └── [7] AMD EPYC             [0] Exit${NC}" # Added Option 7 and Exit
 echo ""
 
 read -p "Select Option → " opt
