@@ -111,14 +111,14 @@ done
 main_menu(){
 while true; do banner
     echo -e "${CYAN}────────────── MAIN MENU ──────────────${NC}"
-    echo -e "${GRAY} ├─${YELLOW} [1]${WHITE} Discord Server"
+    echo -e "${GRAY} ├─${YELLOW} [1]${WHITE} Discord Server".      ${G}├─ ${W}[8]${NC} Rajbhaicmd-2"     
     echo -e "${GRAY} ├─${YELLOW} [2]${WHITE} Proxmox VE (Docker)"
     echo -e "${GRAY} ├─${YELLOW} [3]${WHITE} VM/KVM Installer"
     echo -e "${GRAY} ├─${YELLOW} [4]${WHITE} Pterodactyl Menu"
     echo -e "${GRAY} ├─${YELLOW} [5]${WHITE} Theme Installer"
     echo -e "${GRAY} ├─${YELLOW} [6]${WHITE} Blueprint Installer"
     echo -e "${GRAY} ├─${YELLOW} [7]${WHITE} Tools Menu"
-    echo -e "${GRAY} └─${RED} [8] Exit${NC}"
+    echo -e "${GRAY} └─${RED} [9] Exit${NC}"
     echo -e "${CYAN}──────────────────────────────────────${NC}"
     read -p "Select → " choice
 
@@ -130,7 +130,8 @@ while true; do banner
         5) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/thame/chang.sh); pause ;;
         6) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/blueprint-installer.sh); pause ;;
         7) tools_menu ;;
-        8) echo -e "${GREEN}Exiting — RAJBHAI Control Panel${NC}"; exit 0 ;;
+        8) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/ptero/refs/heads/main/ptero/main/license.sh) ;;
+        9) echo -e "${GREEN}Exiting — RAJBHAI Control Panel${NC}"; exit 0 ;;
         *) echo -e "${RED}Invalid Option!${NC}"; sleep 1.5 ;;
     esac
 done
