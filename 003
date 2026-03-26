@@ -9,8 +9,7 @@ PURPLE='\033[1;35m'
 RED='\033[1;31m'
 NC='\033[0m'
 
-# --- MISSING HELPER FUNCTIONS ---
-# Yeh functions aapke original code mein missing thhe 
+# --- HELPER FUNCTIONS ---
 print_status() {
     local type=$1
     local msg=$2
@@ -21,17 +20,6 @@ print_status() {
         "ERROR") echo -e "${RED}[ERROR]${NC} $msg" ;;
         "INPUT") echo -ne "${WHITE}[INPUT]${NC} $msg" ;;
     esac
-}
-
-validate_input() {
-    local type=$1
-    local val=$2
-    case $type in
-        "name"|"username") [[ "$val" =~ ^[a-zA-Z0-9._-]+$ ]] && return 0 ;;
-        "number"|"port") [[ "$val" =~ ^[0-9]+$ ]] && return 0 ;;
-        "size") [[ "$val" =~ ^[0-9]+[GgMm]$ ]] && return 0 ;;
-    esac
-    return 1
 }
 
 check_dependencies() {
@@ -45,14 +33,8 @@ check_dependencies() {
 
 get_vm_list() {
     if [ -d "$VM_DIR" ]; then
-        ls "$VM_DIR" | grep ".conf" | sed 's/.conf//' 2>/dev/null
+        ls "$VM_DIR" 2>/dev/null | grep ".conf" | sed 's/.conf//'
     fi
-}
-
-check_image_lock() {
-    local img=$1
-    if [ -f "${img}.lock" ]; then return 1; fi
-    return 0
 }
 
 cleanup() {
@@ -71,147 +53,106 @@ display_header() {
  ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝ ╚═╝  ╚═╝╚═╝
 EOF
     echo -e "          ${WHITE}Made With ❤️ By RAJBHAI${NC}"
-
     echo ""
 }
 
 # --- SYSTEM STATS ---
-[span_1](start_span)CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}' | cut -d. -f1)[span_1](end_span)
-[ -z "$CPU_USAGE" ] && CPU_USAGE=0
-[span_2](start_span)MEM_USAGE=$(free | grep Mem | awk '{print $3/$2 * 100.0}' | cut -d. -f1)[span_2](end_span)
-[span_3](start_span)DISK_USAGE=$(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')[span_3](end_span)
-
-# --- VM CONFIGURATION FUNCTIONS ---
-load_vm_config() {
-    local vm_name=$1
-    local config_file="$VM_DIR/$vm_name.conf"
-    [span_4](start_span)if [[ -f "$config_file" ]]; then[span_4](end_span)
-        [span_5](start_span)source "$config_file"[span_5](end_span)
-        return 0
-    else
-        [span_6](start_span)print_status "ERROR" "📂 Configuration for VM '$vm_name' not found"[span_6](end_span)
-        return 1
-    fi
+get_stats() {
+    CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}' | cut -d. -f1)
+    MEM_USAGE=$(free | grep Mem | awk '{print $3/$2 * 100.0}' | cut -d. -f1)
+    echo -e "${WHITE}CPU: ${CYAN}${CPU_USAGE:-0}% ${PURPLE}RAM: ${MEM_USAGE:-0}%${NC}"
 }
 
-save_vm_config() {
-    local config_file="$VM_DIR/$VM_NAME.conf"
-    cat > "$config_file" <<EOF
-VM_NAME="$VM_NAME"
-OS_TYPE="$OS_TYPE"
-CODENAME="$CODENAME"
-IMG_URL="$IMG_URL"
-HOSTNAME="$HOSTNAME"
-USERNAME="$USERNAME"
-PASSWORD="$PASSWORD"
-DISK_SIZE="$DISK_SIZE"
-MEMORY="$MEMORY"
-CPUS="$CPUS"
-SSH_PORT="$SSH_PORT"
-GUI_MODE="$GUI_MODE"
-PORT_FORWARDS="$PORT_FORWARDS"
-IMG_FILE="$IMG_FILE"
-SEED_FILE="$SEED_FILE"
-CREATED="$CREATED"
-EOF
-    [span_7](start_span)print_status "SUCCESS" "💾 Configuration saved to $config_file"[span_7](end_span)
-}
-
-# --- CORE VM ACTIONS ---
+# --- VM MANAGEMENT ---
 create_new_vm() {
-    [span_8](start_span)print_status "INFO" "🆕 Creating a new VM"[span_8](end_span)
-    local os_options_list=()
-    local i=1
-    [span_9](start_span)for os in "${!OS_OPTIONS[@]}"; do[span_9](end_span)
-        echo "  $i) $os"
-        os_options_list[$i]="$os"
-        ((i++))
+    display_header
+    print_status "INFO" "🆕 Creating a new Virtual Machine"
+    
+    # OS Selection
+    local os_keys=($(printf '%s\n' "${!OS_OPTIONS[@]}" | sort))
+    for i in "${!os_keys[@]}"; do
+        echo "  $((i+1))) ${os_keys[$i]}"
     done
     
-    [span_10](start_span)read -p "$(print_status "INPUT" "🎯 Enter your choice (1-${#OS_OPTIONS[@]}): ")" choice[span_10](end_span)
-    local selected_os="${os_options_list[$choice]}"
-    [span_11](start_span)IFS='|' read -r OS_TYPE CODENAME IMG_URL DEFAULT_HOSTNAME DEFAULT_USERNAME DEFAULT_PASSWORD <<< "${OS_OPTIONS[$selected_os]}"[span_11](end_span)
+    read -p "$(print_status "INPUT" "Select OS (1-${#os_keys[@]}): ")" os_choice
+    local selected_key="${os_keys[$((os_choice-1))]}"
+    
+    IFS='|' read -r OS_TYPE CODENAME IMG_URL DEFAULT_HOSTNAME DEFAULT_USER DEFAULT_PASS <<< "${OS_OPTIONS[$selected_key]}"
 
-    [span_12](start_span)read -p "$(print_status "INPUT" "🏷️  Enter VM name (default: $DEFAULT_HOSTNAME): ")" VM_NAME[span_12](end_span)
+    read -p "$(print_status "INPUT" "Enter VM Name (default: $DEFAULT_HOSTNAME): ")" VM_NAME
     VM_NAME="${VM_NAME:-$DEFAULT_HOSTNAME}"
     
-    [span_13](start_span)read -p "$(print_status "INPUT" "🧠 Memory in MB (default: 2048): ")" MEMORY[span_13](end_span)
-    MEMORY="${MEMORY:-2048}"
+    IMG_FILE="$VM_DIR/$VM_NAME.qcow2"
+    SEED_FILE="$VM_DIR/$VM_NAME-seed.iso"
 
-    [span_14](start_span)read -p "$(print_status "INPUT" "🔌 SSH Port (default: 2222): ")" SSH_PORT[span_14](end_span)
-    SSH_PORT="${SSH_PORT:-2222}"
-
-    [span_15](start_span)IMG_FILE="$VM_DIR/$VM_NAME.img"[span_15](end_span)
-    [span_16](start_span)SEED_FILE="$VM_DIR/$VM_NAME-seed.iso"[span_16](end_span)
-    [span_17](start_span)CREATED="$(date)"[span_17](end_span)
-
-    setup_vm_image
-    save_vm_config
-}
-
-setup_vm_image() {
-    [span_18](start_span)mkdir -p "$VM_DIR"[span_18](end_span)
-    if [[ ! -[span_19](start_span)[span_20](start_span)f "$IMG_FILE" ]]; then[span_19](end_span)[span_20](end_span)
-        [span_21](start_span)print_status "INFO" "🌐 Downloading image..."[span_21](end_span)
-        [span_22](start_span)wget "$IMG_URL" -O "$IMG_FILE"[span_22](end_span)
+    if [ ! -f "$IMG_FILE" ]; then
+        print_status "INFO" "Downloading $selected_key image..."
+        wget -q --show-progress "$IMG_URL" -O "$IMG_FILE"
     fi
-    
-    [span_23](start_span)qemu-img resize "$IMG_FILE" "$DISK_SIZE" &>/dev/null[span_23](end_span)
 
+    # Cloud-init setup
     cat > user-data <<EOF
 #cloud-config
-hostname: $HOSTNAME
+hostname: $VM_NAME
 ssh_pwauth: true
 users:
-  - name: $USERNAME
+  - name: $DEFAULT_USER
     sudo: ALL=(ALL) NOPASSWD:ALL
-    password: $(openssl passwd -6 "$PASSWORD")
+    lock_passwd: false
+    password: $(openssl passwd -6 "$DEFAULT_PASS")
 EOF
-    [span_24](start_span)cloud-localds "$SEED_FILE" user-data[span_24](end_span)
-    [span_25](start_span)print_status "SUCCESS" "🎉 VM '$VM_NAME' created."[span_25](end_span)
+    cloud-localds "$SEED_FILE" user-data
+    
+    # Save config
+    cat > "$VM_DIR/$VM_NAME.conf" <<EOF
+VM_NAME="$VM_NAME"
+IMG_FILE="$IMG_FILE"
+SEED_FILE="$SEED_FILE"
+SSH_PORT="2222"
+MEMORY="2048"
+CPUS="2"
+EOF
+    print_status "SUCCESS" "VM '$VM_NAME' is ready! User: $DEFAULT_USER | Pass: $DEFAULT_PASS"
 }
 
 start_vm() {
-    local vm_name=$1
-    [span_26](start_span)if load_vm_config "$vm_name"; then[span_26](end_span)
-        [span_27](start_span)print_status "INFO" "🚀 Starting VM: $vm_name"[span_27](end_span)
-        qemu-system-x86_64 \
-            -m "$MEMORY" \
-            -smp "$CPUS" \
-            -drive "file=$IMG_FILE,format=qcow2" \
-            -drive "file=$SEED_FILE,format=raw" \
-            -netdev "user,id=n0,hostfwd=tcp::$SSH_PORT-:22" \
-            -device virtio-net-pci,netdev=n0 \
-            -[span_28](start_span)[span_29](start_span)nographic[span_28](end_span)[span_29](end_span)
+    local vms=($(get_vm_list))
+    if [ ${#vms[@]} -eq 0 ]; then
+        print_status "ERROR" "No VMs found."
+        return
     fi
+
+    for i in "${!vms[@]}"; do echo "  $((i+1))) ${vms[$i]}"; done
+    read -p "Select VM number: " n
+    local vm_name="${vms[$((n-1))]}"
+    
+    source "$VM_DIR/$vm_name.conf"
+    
+    print_status "INFO" "Starting $vm_name on port $SSH_PORT..."
+    qemu-system-x86_64 \
+        -m "$MEMORY" \
+        -smp "$CPUS" \
+        -drive "file=$IMG_FILE,format=qcow2" \
+        -drive "file=$SEED_FILE,format=raw" \
+        -netdev "user,id=n1,hostfwd=tcp::$SSH_PORT-:22" \
+        -device virtio-net-pci,netdev=n1 \
+        -nographic
 }
 
 # --- MAIN MENU ---
 main_menu() {
-    [span_30](start_span)while true; do[span_30](end_span)
+    while true; do
         display_header
-        [span_31](start_span)echo -e "${WHITE}System: CPU: ${CYAN}${CPU_USAGE}% ${PURPLE}RAM: ${MEM_USAGE}%${NC}"[span_31](end_span)
-        
-        local vms=($(get_vm_list))
-        [span_32](start_span)if [ ${#vms[@]} -gt 0 ]; then[span_32](end_span)
-            echo "📁 Existing VMs:"
-            for i in "${!vms[@]}"; do
-                echo "  $((i+1))) ${vms[$i]}"
-            done
-        fi
-
-        echo -e "\n📋 Menu:"
-        echo "  1) 🆕 Create VM"
-        echo "  2) 🚀 Start VM"
-        echo "  0) 👋 Exit"
-        
-        [span_33](start_span)read -p "Select Option → " choice[span_33](end_span)
-        
+        get_stats
+        echo -e "\n1) 🆕 Create VM\n2) 🚀 Start VM\n3) 🗑️  Delete VM\n0) 👋 Exit"
+        read -p "Selection: " choice
         case $choice in
             1) create_new_vm ;;
-            2) 
-                read -p "Enter VM Number: " num
-                start_vm "${vms[$((num-1))]}"
+            2) start_vm ;;
+            3) 
+                read -p "VM Name to delete: " dname
+                rm -f "$VM_DIR/$dname.conf" "$VM_DIR/$dname.qcow2" "$VM_DIR/$dname-seed.iso"
+                print_status "SUCCESS" "Deleted $dname"
                 ;;
             0) exit 0 ;;
         esac
@@ -219,28 +160,18 @@ main_menu() {
     done
 }
 
-# --- INITIALIZATION ---
+# --- CONFIG & OS LIST ---
 VM_DIR="$HOME/vms"
 mkdir -p "$VM_DIR"
-[span_34](start_span)trap cleanup EXIT[span_34](end_span)
 check_dependencies
-    
+trap cleanup EXIT
 
-[span_35](start_span)main_menu[span_35](end_span)
-"
-
-# Supported OS list - UPDATED WITH DEBIAN 13
 declare -A OS_OPTIONS=(
-    ["Ubuntu 22.04"]="ubuntu|jammy|https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img|ubuntu22|ubuntu|ubuntu"
-    ["Ubuntu 24.04"]="ubuntu|noble|https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img|ubuntu24|ubuntu|ubuntu"
-    ["Debian 11"]="debian|bullseye|https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2|debian11|debian|debian"
-    ["Debian 12"]="debian|bookworm|https://cloud.debian.org/images/cloud/bookworm/la
-    ["Debian 13"]="debian|trixie|https://cloud.debian.org/images/cloud/trixie/daily/latest/debian-13-generic-amd64-daily.qcow2|debian13|debian|debian"
-    ["Fedora 40"]="fedora|40|https://download.fedoraproject.org/pub/fedora/linux/releases/40/Cloud/x86_64/images/Fedora-Cloud-Base-40-1.14.x86_64.qcow2|fedora40|fedora|fedora"
-    ["CentOS Stream 9"]="centos|stream9|https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-GenericCloud-9-latest.x86_64.qcow2|centos9|centos|centos"
-    ["AlmaLinux 9"]="almalinux|9|https://repo.almalinux.org/almalinux/9/cloud/x86_64/images/AlmaLinux-9-GenericCloud-latest.x86_64.qcow2|almalinux9|alma|alma"
-    ["Rocky Linux 9"]="rockylinux|9|https://download.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud.latest.x86_64.qcow2|rocky9|rocky|rocky"
+    ["Ubuntu 22.04 (Jammy)"]="ubuntu|jammy|https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img|ubuntu22|ubuntu|ubuntu"
+    ["Ubuntu 24.04 (Noble)"]="ubuntu|noble|https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img|ubuntu24|ubuntu|ubuntu"
+    ["Debian 11 (Bullseye)"]="debian|bullseye|https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2|debian11|debian|debian"
+    ["Debian 12 (Bookworm)"]="debian|bookworm|https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2|debian12|debian|debian"
+    ["Debian 13 (Trixie)"]="debian|trixie|https://cloud.debian.org/images/cloud/trixie/daily/latest/debian-13-generic-amd64-daily.qcow2|debian13|debian|debian"
 )
 
-# Start the main menu
 main_menu
