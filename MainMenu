@@ -88,8 +88,8 @@ echo -e "${YELLOW} 3)${WHITE} SFTP Fixer"
 echo -e "${YELLOW} 4)${WHITE} System Info"
 echo -e "${YELLOW} 5)${WHITE} Lxd Installer"
 echo -e "${YELLOW} 6)${WHITE} RDP Installer"
-echo -e "${YELLOW} 6)${WHITE} Cloudflare Installer"
-echo -e "${YELLOW} 7)${WHITE} Back"
+echo -e "${YELLOW} 7)${WHITE} Cloudflare Installer"
+echo -e "${YELLOW} 8)${WHITE} Back"
 echo -e "${BLUE}────────────────────────────────────────${NC}"
 read -p "Select → " t
 
@@ -100,7 +100,8 @@ case $t in
  4) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/tools/SYSTEM.sh); pause ;;
  5) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/lxd%20installer); pause ;;
  6) bash <(curl -s https://raw.githubusercontent.com/nobita329/The-Coding-Hub/refs/heads/main/srv/tools/rdp.sh); pause ;;
- 7) break;;
+ 7) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/tools/cloudflare.sh); pause ;;
+ 8) break;;
  *) echo -e "${RED}Invalid${NC}"; pause;;
 esac
 done
