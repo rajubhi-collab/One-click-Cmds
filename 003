@@ -19,8 +19,7 @@ display_header() {
  ██║  ██║██║  ██║╚██████╔╝██████╔╝██║  ██║ ██║  ██║██║
  ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝ ╚═╝  ╚═╝╚═╝
 EOF
-    echo -e "  
-         ${WHITE}Made With ❤️ By RAJBHAI${NC}"
+    echo -e "          ${WHITE}Made With ❤️ By RAJBHAI${NC}"
     echo ""
 }
 
@@ -30,33 +29,45 @@ CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}' | cut -d. -f1)
 MEM_USAGE=$(free | grep Mem | awk '{print $3/$2 * 100.0}' | cut -d. -f1)
 DISK_USAGE=$(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')
 
-# --- DISPLAY INTERFACE ---
 display_header
 
 echo -e "${WHITE}System Vitality: ${GRAY}CPU: ${CYAN}${CPU_USAGE}% ${GRAY}RAM: ${PURPLE}${MEM_USAGE}% ${GRAY}Disk: ${GREEN}${DISK_USAGE}%${NC}"
 echo ""
 
-# Virtualization & Nodes Block
+# --- Updated Menu ---
 echo -e "${CYAN}  VIRTUALIZATION & NODES${NC}"
 echo -e "${GRAY}  ├── [1] RDX/IDX              [4] Proxmox (Node-1)${NC}"
 echo -e "${GRAY}  ├── [2] VM-1 (KVM Mode)      [5] LXC/LXD Deploy${NC}"
 echo -e "${GRAY}  ├── [3] VM-2 (No-KVM)        [6] Docker Deploy${NC}"
-echo -e "${GRAY}  └── [7] AMD EPYC             [0] Exit${NC}"
+echo -e "${GRAY}  └── [7] AMD EPYC             [0] Exit${NC}" # Added Option 7 and Exit
 echo ""
 
-# Selection Logic
 read -p "Select Option → " opt
 
+# Dependency check ko yahan par tabhi chalayenge jab user 1-6 select kare
+check_deps_if_needed() {
+    local deps=("qemu-system-x86_64" "wget" "cloud-localds" "qemu-img" "lsof")
+    for dep in "${deps[@]}"; do
+        if ! command -v "$dep" &> /dev/null; then
+            echo -e "${PURPLE}Installing missing tools...${NC}"
+            sudo apt update && sudo apt install qemu-system cloud-image-utils wget lsof -y
+            break
+        fi
+    done
+}
+
 case $opt in
-    1) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vps.sh) ;;
-    2) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vm.sh) ;;
-    3) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vm2.sh) ;;
-    4) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/proxmox.sh) ;;
+    1) check_deps_if_needed; bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vps.sh) ;;
+    2) check_deps_if_needed; bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vm.sh) ;;
+    3) check_deps_if_needed; bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vm2.sh) ;;
+    4) check_deps_if_needed; bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/proxmox.sh) ;;
     5) echo -e "${PURPLE}Coming Soon...${NC}" ; sleep 2 ;;
-    6) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/dd.sh) ;;
-    7) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/proxmox.sh) ;;
-    *) echo -e "${RED}Invalid!${NC}" ; sleep 1 ;;
+    6) check_deps_if_needed; bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/dd.sh) ;;
+    7) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/amd.txt) ;; # AMD EPYC command
+    0) exit 0 ;;
+    *) echo -e "Invalid Option!" ; sleep 1 ;;
 esac
+
 # Function to display colored output with emojis
 print_status() {
     local type=$1
