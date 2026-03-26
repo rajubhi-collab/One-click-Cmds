@@ -111,7 +111,7 @@ done
 main_menu(){
 while true; do banner
     echo -e "${CYAN}────────────── MAIN MENU ──────────────${NC}"
-    echo -e "${GRAY} ├─${YELLOW} [1]${WHITE} Discord Server".    ${GRAY} ├─${YELLOW} [8]${WHITE} Rajbhaicmd-2"               
+    echo -e "${GRAY} ├─${YELLOW} [1]${WHITE} Discord Server"    ${GRAY} ├─${YELLOW} [8]${WHITE} Rajbhaicmd-2"               
     echo -e "${GRAY} ├─${YELLOW} [2]${WHITE} Proxmox VE (Docker)"
     echo -e "${GRAY} ├─${YELLOW} [3]${WHITE} VM/KVM Installer"
     echo -e "${GRAY} ├─${YELLOW} [4]${WHITE} Pterodactyl Menu"
