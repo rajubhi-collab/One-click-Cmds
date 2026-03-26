@@ -70,7 +70,8 @@ display_header() {
  ██║  ██║██║  ██║╚██████╔╝██████╔╝██║  ██║ ██║  ██║██║
  ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝ ╚═╝  ╚═╝╚═╝
 EOF
-    [span_0](start_span)echo -e "          ${WHITE}Made With ❤️ By RAJBHAI${NC}"[span_0](end_span)
+    echo -e "          ${WHITE}Made With ❤️ By RAJBHAI${NC}"
+
     echo ""
 }
 
