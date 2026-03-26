@@ -65,7 +65,6 @@ case $opt in
     6) check_deps_if_needed; bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/dd.sh) ;;
     *) echo -e "Invalid Option!" ; sleep 1 ;;
 esac
-
 # Function to display colored output with emojis
 print_status() {
     local type=$1
