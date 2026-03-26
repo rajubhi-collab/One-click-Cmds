@@ -24,25 +24,27 @@ EOF
     echo ""
 }
 
-# Stats Fix
+# Accurate Stats
 CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}' | cut -d. -f1)
 [ -z "$CPU_USAGE" ] && CPU_USAGE=0
 MEM_USAGE=$(free | grep Mem | awk '{print $3/$2 * 100.0}' | cut -d. -f1)
 DISK_USAGE=$(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')
 
+# --- DISPLAY INTERFACE ---
 display_header
 
 echo -e "${WHITE}System Vitality: ${GRAY}CPU: ${CYAN}${CPU_USAGE}% ${GRAY}RAM: ${PURPLE}${MEM_USAGE}% ${GRAY}Disk: ${GREEN}${DISK_USAGE}%${NC}"
 echo ""
 
-# --- Updated Menu Block ---
+# Virtualization & Nodes Block
 echo -e "${CYAN}  VIRTUALIZATION & NODES${NC}"
 echo -e "${GRAY}  ├── [1] RDX/IDX              [4] Proxmox (Node-1)${NC}"
 echo -e "${GRAY}  ├── [2] VM-1 (KVM Mode)      [5] LXC/LXD Deploy${NC}"
 echo -e "${GRAY}  ├── [3] VM-2 (No-KVM)        [6] Docker Deploy${NC}"
-echo -e "${GRAY}  └── [7] AMD EPYC             [0] Back/Exit${NC}"
+echo -e "${GRAY}  └── [7] AMD EPYC             [0] Exit${NC}"
 echo ""
 
+# Selection Logic
 read -p "Select Option → " opt
 
 case $opt in
