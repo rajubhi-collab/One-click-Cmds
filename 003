@@ -37,55 +37,28 @@ display_header
 # System Vitality (Clean Alignment)
 echo -e "${WHITE}System Vitality: ${GRAY}CPU: ${CYAN}${CPU_USAGE}% ${GRAY}RAM: ${PURPLE}${MEM_USAGE}% ${GRAY}Disk: ${GREEN}${DISK_USAGE}%${NC}"
 echo ""
-start_vm() {
-    while true; do
-        display_header
-        
-        # Virtualization & Nodes Block
-        echo -e "${CYAN}  VIRTUALIZATION & NODES${NC}"
-        echo -e "${GRAY}  ├── [1] RDX/IDX              [4] Proxmox (Node-1)${NC}"
-        echo -e "${GRAY}  ├── [2] VM-1 (KVM Mode)      [5] LXC/LXD Deploy${NC}"
-        echo -e "${GRAY}  ├── [3] VM-2 (No-KVM)        [6] Docker Deploy${NC}"
-        echo -e "${GRAY}  └── [7] AMD (EPYC)           [0] Back${NC}"
-        echo ""
 
-        read -p "Select Option → " opt
+# Virtualization & Nodes Block
+echo -e "${CYAN}  VIRTUALIZATION & NODES${NC}"
+echo -e "${GRAY}  ├── [1] RDX/IDX              [4] Proxmox (Node-1)${NC}"
+echo -e "${GRAY}  ├── [2] VM-1 (KVM Mode)      [5] LXC/LXD Deploy${NC}"
+echo -e "${GRAY}  ├── [3] VM-2 (No-KVM)        [6] Docker Deploy${NC}"
+echo -e "${GRAY}  └── [7] AMD EPYC${NC}" # Added Option 7 here
+echo ""
 
-        case $opt in
-            1)
-                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vps.sh)
-                ;;
-            2)
-                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vm.sh)
-                ;;
-            3)
-                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vm2.sh)
-                ;;
-            4)
-                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/proxmox.sh)
-                ;;
-            5)
-                echo -e "${PURPLE}LXC Deploy Coming Soon...${NC}"
-                sleep 2
-                ;;
-            6)
-                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/dd.sh)
-                ;;
-            7)
-                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/amd.txt)
-                ;;
-            0)
-                echo -e "${CYAN}Returning to Main Menu...${NC}"
-                sleep 1
-                break  # This exits the loop to go back
-                ;;
-            *)
-                echo -e "${RED}Invalid Option!${NC}"
-                sleep 1
-                ;;
-        esac
-    done
-}
+# Selection Logic
+read -p "Select Option → " opt
+
+case $opt in
+    1) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vps.sh) ;;
+    2) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vm.sh) ;;
+    3) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/vm2.sh) ;;
+    4) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/proxmox.sh) ;;
+    5) echo -e "${PURPLE}Coming Soon...${NC}" ; sleep 2 ;;
+    6) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/dd.sh) ;;
+    7) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/amd.txt) ;; # New Logic Added
+    *) echo -e "${RED}Invalid!${NC}" ; sleep 1 ;;
+esac
 
 # Function to display colored output with emojis
 print_status() {
