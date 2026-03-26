@@ -88,6 +88,7 @@ echo -e "${YELLOW} 3)${WHITE} SFTP Fixer"
 echo -e "${YELLOW} 4)${WHITE} System Info"
 echo -e "${YELLOW} 5)${WHITE} Lxd Installer"
 echo -e "${YELLOW} 6)${WHITE} RDP Installer"
+echo -e "${YELLOW} 6)${WHITE} Cloudflare Installer"
 echo -e "${YELLOW} 7)${WHITE} Back"
 echo -e "${BLUE}────────────────────────────────────────${NC}"
 read -p "Select → " t
