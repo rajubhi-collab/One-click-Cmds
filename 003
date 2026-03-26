@@ -159,17 +159,26 @@ create_new_vm() {
             break
         fi
     done
-
-    while true; do
-        read -s -p "$(print_status "INPUT" "🔑 Enter password (default: $DEFAULT_PASSWORD): ")" PASSWORD
-        PASSWORD="${PASSWORD:-$DEFAULT_PASSWORD}"
-        echo
-        if [ -n "$PASSWORD" ]; then
-            break
-        else
-            print_status "ERROR" "❌ Password cannot be empty"
-        fi
-    done
+                3)
+                    while true; do
+                        read -s -p "🔑 Enter new password (current: ****): " new_password
+                        new_password="${new_password:-$PASSWORD}"
+                        echo
+                        if [ -n "$new_password" ]; then
+                            PASSWORD="$new_password"
+                            break
+                        else
+                            echo "❌ Password cannot be empty"
+                        fi
+                    done
+                    ;;
+                0) break ;;
+                *) echo "Invalid selection" ;;
+            esac
+            save_vm_config # Save changes after each edit
+        done
+    fi
+}
 
     while true; do
         read -p "$(print_status "INPUT" "💾 Disk size (default: 20G): ")" DISK_SIZE
