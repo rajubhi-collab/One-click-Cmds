@@ -1,5 +1,5 @@
 #!/bin/bash
-# AyushTheWarrior Advanced MOTD Installer
+# RAJBHAI Advanced MOTD Installer
 
 echo "🔧 Installing Custom MOTD..."
 
@@ -7,7 +7,7 @@ echo "🔧 Installing Custom MOTD..."
 chmod -x /etc/update-motd.d/* 2>/dev/null
 
 # Create dynamic stats MOTD script
-cat << 'EOF' > /etc/update-motd.d/00-unixnodes
+cat << 'EOF' > /etc/update-motd.d/00-rajbhai
 #!/bin/bash
 
 # Colors
@@ -31,16 +31,16 @@ IP=$(hostname -I | awk '{print $1}')
 UPTIME=$(uptime -p | sed 's/up //')
 
 # Header + Logo
-echo -e "${CYAN}┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐"
-echo -e "│  █████╗ ██╗   ██╗██╗   ██╗███████╗██╗  ██╗████████╗██╗  ██╗███████╗██╗    ██╗ █████╗ ██████╗ ██████╗ ██╗ ██████╗ ██████╗  │"
-echo -e "│ ██╔══██╗╚██╗ ██╔╝██║   ██║██╔════╝██║  ██║╚══██╔══╝██║  ██║██╔════╝██║    ██║██╔══██╗██╔══██╗██╔══██╗██║██╔═══██╗██╔══██╗ │"
-echo -e "│ ███████║ ╚████╔╝ ██║   ██║███████╗███████║   ██║   ███████║█████╗  ██║ █╗ ██║███████║██████╔╝██████╔╝██║██║   ██║██████╔╝ │"
-echo -e "│ ██╔══██║  ╚██╔╝  ██║   ██║╚════██║██╔══██║   ██║   ██╔══██║██╔══╝  ██║███╗██║██╔══██║██╔══██╗██╔══██╗██║██║   ██║██╔══██╗ │"
-echo -e "│ ██║  ██║   ██║   ╚██████╔╝███████║██║  ██║   ██║   ██║  ██║███████╗╚███╔███╔╝██║  ██║██║  ██║██║  ██║██║╚██████╔╝██║  ██║ │"
-echo -e "│ ╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚══════╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═╝  ╚═╝ │"
-echo -e "└─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘${RESET}"
+echo -e "${CYAN}┌────────────────────────────────────────────────────────────────────────┐"
+echo -e "│ ██████╗  █████╗      ██╗██████╗ ██╗  ██╗ █████╗ ██╗              │"
+echo -e "│ ██╔══██╗██╔══██╗     ██║██╔══██╗██║  ██║██╔══██╗██║              │"
+echo -e "│ ██████╔╝███████║     ██║██████╔╝███████║███████║██║              │"
+echo -e "│ ██╔══██╗██╔══██║██   ██║██╔══██╗██╔══██║██╔══██║██║              │"
+echo -e "│ ██║  ██║██║  ██║╚██████╔╝██████╔╝██║  ██║██║  ██║██║              │"
+echo -e "│ ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝              │"
+echo -e "└────────────────────────────────────────────────────────────────────────┘${RESET}"
 
-echo -e "${GREEN} Welcome to AyushTheWarrior Datacenter! 🚀 ${RESET}\n"
+echo -e "${GREEN} Welcome to RAJBHAI Datacenter! 🚀 ${RESET}\n"
 
 # System Stats Table
 echo -e "${BLUE}📊 System Information:${RESET} (as of $(date))\n"
@@ -56,7 +56,7 @@ echo -e "${CYAN}Need help? Support is always available: https://discord.gg/mcFt2
 echo -e "${GREEN}Quality Wise — No Compromise 😄${RESET}"
 EOF
 
-chmod +x /etc/update-motd.d/00-ayushthewarrior
+chmod +x /etc/update-motd.d/00-rajbhai
 
-echo "🎉 AyushTheWarrior MOTD Installed Successfully!"
+echo "🎉 RAJBHAI MOTD Installed Successfully!"
 echo "➡ Reconnect SSH to see the new MOTD."
