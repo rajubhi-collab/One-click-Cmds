@@ -43,6 +43,7 @@ echo -e "${CYAN}  VIRTUALIZATION & NODES${NC}"
 echo -e "${GRAY}  ├── [1] RDX/IDX              [4] Proxmox (Node-1)${NC}"
 echo -e "${GRAY}  ├── [2] VM-1 (KVM Mode)      [5] LXC/LXD Deploy${NC}"
 echo -e "${GRAY}  └── [3] VM-2 (No-KVM)        [6] Docker Deploy${NC}"
+echo -e "${GRAY}  └── [7] AMD (EPYC)
 echo ""
 
 # Selection Logic
@@ -55,6 +56,7 @@ case $opt in
     4) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/proxmox.sh) ;;
     5) echo -e "${PURPLE}Coming Soon...${NC}" ; sleep 2 ;;
     6) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/dd.sh) ;;
+    7) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/amd.txt) ;;
     *) echo -e "${RED}Invalid!${NC}" ; sleep 1 ;;
 esac
 
