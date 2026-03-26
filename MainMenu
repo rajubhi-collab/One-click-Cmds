@@ -20,14 +20,13 @@ COLORS=(
 '\033[1;35m' '\033[1;36m'
 '\033[38;5;208m' '\033[38;5;205m' '\033[38;5;51m'
 )
-NC='\033[0m'
 BOLD='\033[1m'
 GRAY='\033[38;5;245m'
 
 rand_color(){ echo -e "${COLORS[$RANDOM % ${#COLORS[@]}]}"; }
 pause(){ echo -e "${GRAY}"; read -p "Press Enter to continue..." x; echo -e "${NC}"; }
 
-# ===================== RAJBHAI BANNER =====================
+# ===================== BANNER =====================
 banner(){
 clear
 C1=$(rand_color); C2=$(rand_color); C3=$(rand_color)
@@ -46,7 +45,7 @@ echo -e "${C1}━━━━━━━━━━━━━━━━━━━━━━
 echo
 }
 
-# ---- PTERODACTYL MENU ----
+# ===================== PTERODACTYL MENU =====================
 ptero_menu() {
     while true; do banner
         echo -e "${CYAN}────────────── PTERODACTYL MENU ──────────────${NC}"
@@ -79,21 +78,46 @@ ptero_menu() {
     done
 }
 
+# ===================== TOOLS MENU =====================
+tools_menu(){
+while true; do banner
+echo -e "${BLUE}────────────── TOOLS MENU ──────────────${NC}"
+echo -e "${YELLOW} 1)${WHITE} Root Access"
+echo -e "${YELLOW} 2)${WHITE} Tailscale VPN"
+echo -e "${YELLOW} 3)${WHITE} SFTP Fixer"
+echo -e "${YELLOW} 4)${WHITE} System Info"
+echo -e "${YELLOW} 5)${WHITE} Lxd Installer"
+echo -e "${YELLOW} 6)${WHITE} RDP Installer"
+echo -e "${YELLOW} 7)${WHITE} Back"
+echo -e "${BLUE}────────────────────────────────────────${NC}"
+read -p "Select → " t
+
+case $t in
+ 1) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/tools/root.sh); pause ;;
+ 2) curl -fsSL https://tailscale.com/install.sh | sh; pause ;;
+ 3) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ssh.sh); pause ;;
+ 4) bash <(curl -s https://raw.githubusercontent.com/nobita329/The-Coding-Hub/refs/heads/main/srv/tools/SYSTEM.sh); pause ;;
+ 5) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/lxd%20installer); pause ;;
+ 6) bash <(curl -s https://raw.githubusercontent.com/nobita329/The-Coding-Hub/refs/heads/main/srv/tools/rdp.sh); pause ;;
+ 7) break;;
+ *) echo -e "${RED}Invalid${NC}"; pause;;
+esac
+done
+}
+
 # ===================== MAIN MENU =====================
+main_menu(){
 while true; do banner
     echo -e "${CYAN}────────────── MAIN MENU ──────────────${NC}"
-    echo -e "${GRAY} ├─${YELLOW} [1]${WHITE} Discord Server Link"
-    echo -e "${GRAY} ├─${YELLOW} [2]${WHITE} Proxmox VE (Docker) Install"
-    echo -e "${GRAY} ├─${YELLOW} [3]${WHITE} VM/KVM Amd Installer"
-    echo -e "${GRAY} ├─${YELLOW} [4]${WHITE} Pterodactyl Panel Installer"
+    echo -e "${GRAY} ├─${YELLOW} [1]${WHITE} Discord Server"
+    echo -e "${GRAY} ├─${YELLOW} [2]${WHITE} Proxmox VE (Docker)"
+    echo -e "${GRAY} ├─${YELLOW} [3]${WHITE} VM/KVM Installer"
+    echo -e "${GRAY} ├─${YELLOW} [4]${WHITE} Pterodactyl Menu"
     echo -e "${GRAY} ├─${YELLOW} [5]${WHITE} Theme Installer"
     echo -e "${GRAY} ├─${YELLOW} [6]${WHITE} Blueprint Installer"
-    echo -e "${GRAY} ├─${YELLOW} [7]${WHITE} Lxd Installer"
-    echo -e "${GRAY} ├─${YELLOW} [8]${WHITE} SFTP Fixer"
-    echo -e "${GRAY} ├─${YELLOW} [9]${WHITE} Tailscale VPN Installer"
-    echo -e "${GRAY} ├─${YELLOW} [10]${WHITE} Extra"
-    echo -e "${GRAY} └─${RED} [11] Exit${NC}"
-    echo -e "${CYAN}────────────────────────────────────────${NC}"
+    echo -e "${GRAY} ├─${YELLOW} [7]${WHITE} Tools Menu"
+    echo -e "${GRAY} └─${RED} [8] Exit${NC}"
+    echo -e "${CYAN}──────────────────────────────────────${NC}"
     read -p "Select → " choice
 
     case $choice in
@@ -103,11 +127,11 @@ while true; do banner
         4) ptero_menu ;;
         5) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/thame/chang.sh); pause ;;
         6) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/blueprint-installer.sh); pause ;;
-        7) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/lxd%20installer); pause ;;
-        8) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ssh.sh); pause ;;
-        9) curl -fsSL https://tailscale.com/install.sh | sh; pause ;;
-        10) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/tools/root.sh); pause ;;
-        11) echo -e "${GREEN}Exiting — RAJBHAI Control Panel${NC}"; exit 0 ;;
+        7) tools_menu ;;
+        8) echo -e "${GREEN}Exiting — RAJBHAI Control Panel${NC}"; exit 0 ;;
         *) echo -e "${RED}Invalid Option!${NC}"; sleep 1.5 ;;
     esac
 done
+}
+
+main_menu
