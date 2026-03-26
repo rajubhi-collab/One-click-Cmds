@@ -304,7 +304,7 @@ ${RESET}
 EOF
 
     # Animated subtitle with rainbow effect
-    local subtitle="AUTO LXC + LXD INSTALLER MADE WITH ❤️ BY AYUSHTHEWARRIOR"
+    local subtitle="AUTO LXC + LXD INSTALLER MADE WITH ❤️ BY RAJBHAI"
     local rainbow_colors=("$RED" "$YELLOW" "$GREEN" "$CYAN" "$BLUE" "$MAGENTA")
     
     printf "\n"
