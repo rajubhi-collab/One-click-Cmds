@@ -52,7 +52,7 @@ main_menu() {
         4) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/proxmox.sh) ;;
         5) echo -e "${PURPLE}Coming Soon...${NC}" ; sleep 2 ; main_menu ;;
         6) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/dd.sh) ;;
-        7) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/amd.txt) ;;
+        7) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/amd) ;;
         0) exit 0 ;;
         *) echo -e "${RED}Invalid!${NC}" ; sleep 1 ; main_menu ;;
     esac
