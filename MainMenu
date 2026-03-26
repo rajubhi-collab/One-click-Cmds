@@ -111,13 +111,14 @@ done
 main_menu(){
 while true; do banner
     echo -e "${CYAN}────────────── MAIN MENU ──────────────${NC}"
-    echo -e "${GRAY} ├─${YELLOW} [1]${WHITE} Discord Server"    ${GRAY} ├─${YELLOW} [8]${WHITE} Rajbhaicmd-2"               
+    echo -e "${GRAY} ├─${YELLOW} [1]${WHITE} Discord Server"                  
     echo -e "${GRAY} ├─${YELLOW} [2]${WHITE} Proxmox VE (Docker)"
     echo -e "${GRAY} ├─${YELLOW} [3]${WHITE} VM/KVM Installer"
     echo -e "${GRAY} ├─${YELLOW} [4]${WHITE} Pterodactyl Menu"
     echo -e "${GRAY} ├─${YELLOW} [5]${WHITE} Theme Installer"
     echo -e "${GRAY} ├─${YELLOW} [6]${WHITE} Blueprint Installer"
     echo -e "${GRAY} ├─${YELLOW} [7]${WHITE} Tools Menu"
+    echo -e "${GRAY} ├─${YELLOW} [8]${WHITE} RajbhaiCmd-2"
     echo -e "${GRAY} └─${RED} [9] Exit${NC}"
     echo -e "${CYAN}──────────────────────────────────────${NC}"
     read -p "Select → " choice
