@@ -52,7 +52,7 @@ printf "  ${YELLOW}Users Logged :${RESET} %s\n" "$USERS"
 printf "  ${YELLOW}IP Address   :${RESET} %s\n" "$IP"
 printf "  ${YELLOW}Uptime       :${RESET} %s\n\n" "$UPTIME"
 
-echo -e "${CYAN}Need help? Support is always available: https://discord.gg/mcFt2fDCNg${RESET}"
+echo -e "${CYAN}Need help? Support is always available: https://discord.gg/es6kwz26My}"
 echo -e "${GREEN}Quality Wise — No Compromise 😄${RESET}"
 EOF
 
