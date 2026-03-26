@@ -11,7 +11,6 @@ NC='\033[0m'
 display_header() {
     clear
     echo -e "${CYAN}"
-    # Alignment fix karne ke liye spaces adjust kiye hain
     cat << "EOF"
  ██████╗  █████╗      ██╗██████╗ ██╗  ██╗  █████╗ ██╗
  ██╔══██╗██╔══██╗     ██║██╔══██╗██║  ██║ ██╔══██╗██║
@@ -20,32 +19,30 @@ display_header() {
  ██║  ██║██║  ██║╚██████╔╝██████╔╝██║  ██║ ██║  ██║██║
  ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝ ╚═╝  ╚═╝╚═╝
 EOF
-    echo -e "          ${WHITE}Made With ❤️ By RAJBHAI${NC}"
+    echo -e "  
+         ${WHITE}Made With ❤️ By RAJBHAI${NC}"
     echo ""
 }
 
-# --- Accurate Stats Fix ---
-# Is formula se -10% wala error nahi aayega
+# Stats Fix
 CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}' | cut -d. -f1)
 [ -z "$CPU_USAGE" ] && CPU_USAGE=0
 MEM_USAGE=$(free | grep Mem | awk '{print $3/$2 * 100.0}' | cut -d. -f1)
 DISK_USAGE=$(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')
 
-# --- DISPLAY INTERFACE ---
 display_header
 
-# System Vitality (Clean Alignment)
 echo -e "${WHITE}System Vitality: ${GRAY}CPU: ${CYAN}${CPU_USAGE}% ${GRAY}RAM: ${PURPLE}${MEM_USAGE}% ${GRAY}Disk: ${GREEN}${DISK_USAGE}%${NC}"
 echo ""
 
-# Virtualization & Nodes Block
+# --- Updated Menu Block ---
 echo -e "${CYAN}  VIRTUALIZATION & NODES${NC}"
 echo -e "${GRAY}  ├── [1] RDX/IDX              [4] Proxmox (Node-1)${NC}"
 echo -e "${GRAY}  ├── [2] VM-1 (KVM Mode)      [5] LXC/LXD Deploy${NC}"
 echo -e "${GRAY}  ├── [3] VM-2 (No-KVM)        [6] Docker Deploy${NC}"
-echo -e "${GRAY}  └── [7] AMD EPYC${NC}" # Added Option 7 here
+echo -e "${GRAY}  └── [7] AMD EPYC             [0] Back/Exit${NC}"
 echo ""
-# Selection Logic
+
 read -p "Select Option → " opt
 
 case $opt in
@@ -56,10 +53,9 @@ case $opt in
     5) echo -e "${PURPLE}Coming Soon...${NC}" ; sleep 2 ;;
     6) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/dd.sh) ;;
     7) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/amd.txt) ;;
-    0) return 0 ;; # This will allow you to go back to the previous menu
+    0) exit 0 ;;
     *) echo -e "${RED}Invalid!${NC}" ; sleep 1 ;;
 esac
-
 # Function to display colored output with emojis
 print_status() {
     local type=$1
