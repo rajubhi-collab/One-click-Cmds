@@ -63,6 +63,7 @@ case $opt in
     4) check_deps_if_needed; bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/proxmox.sh) ;;
     5) echo -e "${PURPLE}Coming Soon...${NC}" ; sleep 2 ;;
     6) check_deps_if_needed; bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/srv/vm/dd.sh) ;;
+    7) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/amd.txt) ;;
     *) echo -e "Invalid Option!" ; sleep 1 ;;
 esac
 # Function to display colored output with emojis
