@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==========================================
-#  AYUSHTHEWARRIOR PTERODACTYL AUTO DEPLOY v3
+#  RAJBHAI PTERODACTYL AUTO DEPLOY v4
 # ==========================================
 
 # -------- COLORS --------
@@ -22,7 +22,6 @@ warn(){ echo -e "${YELLOW}⚠ $1${RESET}"; }
 fail(){ echo -e "${RED}✖ $1${RESET}"; }
 
 # -------- EFFECTS --------
-
 type_write() {
     text="$1"
     delay=0.01
@@ -54,24 +53,17 @@ deploy_bar() {
 # -------- HEADER --------
 clear
 echo -e "${CYAN}"
-
 cat << "EOF"
-8888888b.  888                                 888                   888             888 
-888   Y88b 888                                 888                   888             888 
-888    888 888                                 888                   888             888 
-888   d88P 888888 .d88b.  888d888 .d88b.   .d88888  8888b.   .d8888b 888888 888  888 888 
-8888888P"  888   d8P  Y8b 888P"  d88""88b d88" 888     "88b d88P"    888    888  888 888 
-888        888   88888888 888    888  888 888  888 .d888888 888      888    888  888 888 
-888        Y88b. Y8b.     888    Y88..88P Y88b 888 888  888 Y88b.    Y88b.  Y88b 888 888 
-888         "Y888 "Y8888  888     "Y88P"   "Y88888 "Y888888  "Y8888P  "Y888  "Y88888 888 
-                                                                                 888     
-                                                                            Y8b d88P     
-                                                                             "Y88P"      
+██████╗  █████╗      ██╗██████╗ ██╗  ██╗ █████╗ ██╗
+██╔══██╗██╔══██╗     ██║██╔══██╗██║  ██║██╔══██╗██║
+██████╔╝███████║     ██║██████╔╝███████║███████║██║
+██╔══██╗██╔══██║██   ██║██╔══██╗██╔══██║██╔══██║██║
+██║  ██║██║  ██║╚█████╔╝██████╔╝██║  ██║██║  ██║██║
+╚═╝  ╚═╝╚═╝  ╚═╝ ╚════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝
 EOF
-
 echo -e "${RESET}"
 line
-echo -e "${GREEN}        :: PTERODACTYL AUTO DEPLOYMENT SYSTEM :: v3${RESET}"
+echo -e "${GREEN}     :: PTERODACTYL PANEL AUTO INSTALLER :: Latest Version${RESET}"
 line
 echo ""
 
@@ -83,6 +75,12 @@ type_write "Allocating server resources..."
 sleep 0.5
 loading_bar
 echo ""
+
+# -------- ROOT CHECK --------
+if [[ $EUID -ne 0 ]]; then
+    fail "This script must be run as root!"
+    exit 1
+fi
 
 # -------- DOMAIN INPUT LOOP --------
 while true; do
@@ -115,98 +113,137 @@ line
 echo -e "${PURPLE}>> EXECUTING ROOT PROTOCOLS...${RESET}"
 sleep 1
 
-# Add your actual install logic below this line
+# -------- DETECT OS --------
+step "Detecting OS..."
+OS=$(lsb_release -is 2>/dev/null | tr '[:upper:]' '[:lower:]')
+CODENAME=$(lsb_release -cs 2>/dev/null)
+if [[ -z "$OS" ]]; then
+    fail "Could not detect OS. Ubuntu/Debian required."
+    exit 1
+fi
+ok "Detected: $OS ($CODENAME)"
+
+# -------- DETECT PHP VERSION --------
+PHP_VERSION="8.3"
+
+# -------- INSTALL BASE DEPENDENCIES --------
 step "Updating system packages..."
-# --- Dependencies ---
-apt update && apt install -y curl apt-transport-https ca-certificates gnupg unzip git tar sudo lsb-release
+apt update -y && apt install -y curl apt-transport-https ca-certificates gnupg unzip git tar sudo lsb-release wget software-properties-common
 
-# Detect OS
-OS=$(lsb_release -is | tr '[:upper:]' '[:lower:]')
-
+# -------- PHP REPO --------
+step "Adding PHP repository..."
 if [[ "$OS" == "ubuntu" ]]; then
-    echo "✅ Detected Ubuntu. Adding PPA for PHP..."
-    apt install -y software-properties-common
     LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php
 elif [[ "$OS" == "debian" ]]; then
-    echo "✅ Detected Debian. Skipping PPA and adding PHP repo manually..."
-    # Add SURY PHP repo for Debian
     curl -fsSL https://packages.sury.org/php/apt.gpg | gpg --dearmor -o /usr/share/keyrings/sury-php.gpg
-    echo "deb [signed-by=/usr/share/keyrings/sury-php.gpg] https://packages.sury.org/php/ $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/sury-php.list
+    echo "deb [signed-by=/usr/share/keyrings/sury-php.gpg] https://packages.sury.org/php/ ${CODENAME} main" | tee /etc/apt/sources.list.d/sury-php.list
 fi
 
-# Add Redis GPG key and repo
-curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
-echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+# -------- REDIS REPO --------
+step "Adding Redis repository..."
+curl -fsSL https://packages.redis.io/gpg | gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb ${CODENAME} main" | tee /etc/apt/sources.list.d/redis.list
 
-apt update
+apt update -y
 
-# --- Install PHP + extensions ---
-apt install -y php8.3 php8.3-{cli,fpm,common,mysql,mbstring,bcmath,xml,zip,curl,gd,tokenizer,ctype,simplexml,dom} mariadb-server nginx redis-server
-sleep 1
-ok "System updated."
-step "Installing dependencies..."
-# --- Install Composer ---
-curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+# -------- INSTALL PHP + EXTENSIONS --------
+step "Installing PHP ${PHP_VERSION} and dependencies..."
+apt install -y \
+    php${PHP_VERSION} \
+    php${PHP_VERSION}-{cli,fpm,common,mysql,mbstring,bcmath,xml,zip,curl,gd,tokenizer,ctype,simplexml,dom} \
+    mariadb-server nginx redis-server cron
+ok "System packages installed."
 
-# --- Download Pterodactyl Panel ---
+# -------- INSTALL COMPOSER --------
+step "Installing Composer..."
+curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+ok "Composer ready."
+
+# -------- DOWNLOAD LATEST PTERODACTYL PANEL --------
+step "Downloading latest Pterodactyl Panel..."
+PANEL_VERSION=$(curl -s https://api.github.com/repos/pterodactyl/panel/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+if [[ -z "$PANEL_VERSION" ]]; then
+    PANEL_VERSION="latest"
+    PANEL_URL="https://github.com/pterodactyl/panel/releases/latest/download/panel.tar.gz"
+else
+    PANEL_URL="https://github.com/pterodactyl/panel/releases/download/${PANEL_VERSION}/panel.tar.gz"
+fi
+ok "Panel version: ${PANEL_VERSION}"
+
 mkdir -p /var/www/pterodactyl
 cd /var/www/pterodactyl
-curl -Lo panel.tar.gz https://github.com/pterodactyl/panel/releases/latest/download/panel.tar.gz
+curl -Lo panel.tar.gz "${PANEL_URL}"
 tar -xzvf panel.tar.gz
+rm -f panel.tar.gz
 chmod -R 755 storage/* bootstrap/cache/
+ok "Panel downloaded and extracted."
 
-# --- MariaDB Setup ---
-DB_NAME=panel
-DB_USER=pterodactyl
-DB_PASS=yourPassword
+# -------- MARIADB SETUP --------
+step "Configuring database..."
+DB_NAME="panel"
+DB_USER="pterodactyl"
+DB_PASS=$(tr -dc 'A-Za-z0-9!@#$%^&*' < /dev/urandom | head -c 24)
+
+systemctl enable --now mariadb
+
+mariadb -e "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;"
+mariadb -e "DROP USER IF EXISTS '${DB_USER}'@'127.0.0.1';"
 mariadb -e "CREATE USER '${DB_USER}'@'127.0.0.1' IDENTIFIED BY '${DB_PASS}';"
-mariadb -e "CREATE DATABASE ${DB_NAME};"
-mariadb -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1' WITH GRANT OPTION;"
+mariadb -e "GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'127.0.0.1' WITH GRANT OPTION;"
 mariadb -e "FLUSH PRIVILEGES;"
+ok "Database configured."
 
-# --- .env Setup ---
-if [ ! -f ".env.example" ]; then
-    curl -Lo .env.example https://raw.githubusercontent.com/pterodactyl/panel/develop/.env.example
+# -------- .env SETUP --------
+step "Configuring environment..."
+if [ ! -f ".env" ]; then
+    if [ -f ".env.example" ]; then
+        cp .env.example .env
+    else
+        curl -Lo .env https://raw.githubusercontent.com/pterodactyl/panel/develop/.env.example
+    fi
 fi
-cp .env.example .env
 sed -i "s|APP_URL=.*|APP_URL=https://${DOMAIN}|g" .env
 sed -i "s|DB_DATABASE=.*|DB_DATABASE=${DB_NAME}|g" .env
 sed -i "s|DB_USERNAME=.*|DB_USERNAME=${DB_USER}|g" .env
 sed -i "s|DB_PASSWORD=.*|DB_PASSWORD=${DB_PASS}|g" .env
-if ! grep -q "^APP_ENVIRONMENT_ONLY=" .env; then
-    echo "APP_ENVIRONMENT_ONLY=false" >> .env
-fi
+grep -q "^APP_ENVIRONMENT_ONLY=" .env && sed -i "s|^APP_ENVIRONMENT_ONLY=.*|APP_ENVIRONMENT_ONLY=false|" .env || echo "APP_ENVIRONMENT_ONLY=false" >> .env
+ok "Environment configured."
 
-# --- Install PHP dependencies ---
-echo "✅ Installing PHP dependencies..."
+# -------- PHP DEPENDENCIES --------
+step "Installing PHP dependencies..."
 COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
+ok "PHP dependencies installed."
 
-# --- Generate Application Key ---
-echo "✅ Generating application key..."
+# -------- APP KEY + MIGRATIONS --------
+step "Generating application key..."
 php artisan key:generate --force
+ok "App key generated."
 
-# --- Run Migrations ---
+step "Running database migrations..."
 php artisan migrate --seed --force
+ok "Migrations complete."
 
-# --- Permissions ---
+# -------- PERMISSIONS --------
+step "Setting permissions..."
 chown -R www-data:www-data /var/www/pterodactyl/*
-apt install -y cron
-systemctl enable --now cron
-(crontab -l 2>/dev/null; echo "* * * * * php /var/www/pterodactyl/artisan schedule:run >> /dev/null 2>&1") | crontab -
-sleep 1
-ok "Dependencies installed."
-step "Generating SSL certificate..."
+ok "Permissions set."
 
-# --- Nginx Setup ---
+# -------- CRON --------
+step "Setting up cron job..."
+systemctl enable --now cron 2>/dev/null || systemctl enable --now crond 2>/dev/null || true
+(crontab -l 2>/dev/null | grep -v "pterodactyl"; echo "* * * * * php /var/www/pterodactyl/artisan schedule:run >> /dev/null 2>&1") | crontab -
+ok "Cron configured."
+
+# -------- SSL (SELF-SIGNED) --------
+step "Generating SSL certificate..."
 mkdir -p /etc/certs/panel
-cd /etc/certs/panel
 openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 \
--subj "/C=NA/ST=NA/L=NA/O=NA/CN=Generic SSL Certificate" \
--keyout privkey.pem -out fullchain.pem
-sleep 1
-ok "SSL secured."
-step "Configuring NGINX..."
-sleep 1
+    -subj "/C=NA/ST=NA/L=NA/O=Pterodactyl/CN=${DOMAIN}" \
+    -keyout /etc/certs/panel/privkey.pem -out /etc/certs/panel/fullchain.pem 2>/dev/null
+ok "SSL certificate generated."
+
+# -------- NGINX CONFIG --------
+step "Configuring Nginx..."
 tee /etc/nginx/sites-available/pterodactyl.conf > /dev/null << EOF
 server {
     listen 80;
@@ -223,6 +260,9 @@ server {
 
     ssl_certificate /etc/certs/panel/fullchain.pem;
     ssl_certificate_key /etc/certs/panel/privkey.pem;
+    ssl_session_cache shared:SSL:10m;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
 
     client_max_body_size 100m;
     client_body_timeout 120s;
@@ -237,8 +277,9 @@ server {
         fastcgi_pass unix:/run/php/php${PHP_VERSION}-fpm.sock;
         fastcgi_index index.php;
         include /etc/nginx/fastcgi_params;
-        fastcgi_param PHP_VALUE "upload_max_filesize=100M \n post_max_size=100M";
+        fastcgi_param PHP_VALUE "upload_max_filesize = 100M \n post_max_size = 100M";
         fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+        fastcgi_read_timeout 300;
     }
 
     location ~ /\.ht {
@@ -247,22 +288,26 @@ server {
 }
 EOF
 
-ln -s /etc/nginx/sites-available/pterodactyl.conf /etc/nginx/sites-enabled/pterodactyl.conf || true
-nginx -t && systemctl restart nginx
-ok "Nginx online"
+rm -f /etc/nginx/sites-enabled/default
+ln -sf /etc/nginx/sites-available/pterodactyl.conf /etc/nginx/sites-enabled/pterodactyl.conf
+nginx -t && systemctl enable --now nginx && systemctl restart nginx
+ok "Nginx configured and running."
 
-# --- Queue Worker ---
+# -------- QUEUE WORKER --------
+step "Setting up queue worker..."
 tee /etc/systemd/system/pteroq.service > /dev/null << 'EOF'
 [Unit]
 Description=Pterodactyl Queue Worker
-After=redis-server.service
+After=redis-server.service mariadb.service
 
 [Service]
 User=www-data
 Group=www-data
 Restart=always
-ExecStart=/usr/bin/php /var/www/pterodactyl/artisan queue:work --queue=high,standard,low --sleep=3 --tries=3
+ExecStart=/usr/bin/php /var/www/pterodactyl/artisan queue:work --queue=high,standard,low --sleep=3 --tries=3 --max-time=3600
 RestartSec=5s
+StartLimitInterval=180s
+StartLimitBurst=30
 
 [Install]
 WantedBy=multi-user.target
@@ -271,24 +316,28 @@ EOF
 systemctl daemon-reload
 systemctl enable --now redis-server
 systemctl enable --now pteroq.service
-ok "Queue running"
-ok "NGINX configured."
+ok "Queue worker running."
 
+# -------- CREATE ADMIN USER --------
 clear
-step "Create admin user"
+step "Creating admin user..."
 deploy_bar
-# --- Admin User ---
+echo ""
 cd /var/www/pterodactyl
-sed -i '/^APP_ENVIRONMENT_ONLY=/d' .env
-echo "APP_ENVIRONMENT_ONLY=false" >> .env
 php artisan p:user:make
 
-# ---------------- DONE ----------------
-
+# -------- DONE --------
 echo ""
 line
-echo -e "${GREEN}🚀 Deployment Complete!${RESET}"
-echo -e "${WHITE}Access your panel at:${RESET} ${CYAN}https://$DOMAIN${RESET}"
+echo -e "${GREEN}🚀 Pterodactyl ${PANEL_VERSION} — Deployment Complete!${RESET}"
+line
+echo -e "${WHITE}Panel URL   :${RESET} ${CYAN}https://${DOMAIN}${RESET}"
+echo -e "${WHITE}DB Name     :${RESET} ${WHITE}${DB_NAME}${RESET}"
+echo -e "${WHITE}DB User     :${RESET} ${WHITE}${DB_USER}${RESET}"
+echo -e "${WHITE}DB Password :${RESET} ${YELLOW}${DB_PASS}${RESET}"
+echo -e "${WHITE}PHP Version :${RESET} ${WHITE}${PHP_VERSION}${RESET}"
 line
 echo -e "${GRAY}SYSTEM STATUS: STABLE | FIREWALL: ACTIVE | DATABASE: CONNECTED${RESET}"
+echo ""
+warn "Save your DB password shown above — it won't be displayed again!"
 echo ""
