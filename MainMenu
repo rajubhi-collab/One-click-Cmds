@@ -152,6 +152,29 @@ ptero_menu() {
     done
 }
 
+# ===================== THEME INSTALLER MENU =====================
+theme_menu() {
+    while true; do
+        banner
+        echo -e "${MAGENTA}╔══════════════════════════════════════════════════╗${NC}"
+        echo -e "${MAGENTA}║${NC}      ${BOLD}${WHITE}🎨 THEME INSTALLER MENU${NC}                  ${MAGENTA}║${NC}"
+        echo -e "${MAGENTA}╠══════════════════════════════════════════════════╣${NC}"
+        echo -e "${MAGENTA}║${NC}  ${GREEN}[1]${NC} New Theme Manager  ${GRAY}:: Nebula/Euphoria/Tools${NC}"
+        echo -e "${MAGENTA}║${NC}  ${YELLOW}[2]${NC} Old Theme Installer ${GRAY}:: Classic Theme Script${NC}"
+        echo -e "${MAGENTA}║${NC}  ${WHITE}[3]${NC} Back"
+        echo -e "${MAGENTA}╚══════════════════════════════════════════════════╝${NC}"
+        echo ""
+        read -p "  Select → " tchoice
+
+        case $tchoice in
+            1) bash <(curl -fsSL https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/theme-manager.sh) ;;
+            2) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/thame/chang.sh); pause ;;
+            3) break ;;
+            *) echo -e "${RED}  Invalid option${NC}"; sleep 1 ;;
+        esac
+    done
+}
+
 # ===================== TOOLS MENU =====================
 tools_menu(){
     while true; do 
@@ -204,7 +227,7 @@ main_menu(){
             2) docker run -itd --name proxmoxve --hostname pve --privileged --cgroupns=host --security-opt apparmor=unconfined --security-opt seccomp=unconfined -v /sys/fs/cgroup:/sys/fs/cgroup:rw -v /lib/modules:/lib/modules:ro -v /dev/fuse:/dev/fuse -v /sys/kernel/debug:/sys/kernel/debug -p 8006:8006 --restart unless-stopped rtedpro/proxmox:9.0.11; pause ;;
             3) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/003); pause ;;
             4) ptero_menu ;;
-            5) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/thame/chang.sh); pause ;;
+            5) theme_menu ;;
             6) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/blueprint-installer.sh); pause ;;
             7) tools_menu ;;
             8) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/ptero/refs/heads/main/ptero/main/license.sh) ;;
