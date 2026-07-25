@@ -54,9 +54,8 @@ ptero_menu() {
         echo -e "${YELLOW} 2)${WHITE} Install Wings"
         echo -e "${YELLOW} 3)${WHITE} Create User"
         echo -e "${YELLOW} 4)${WHITE} Update Panel"
-        echo -e "${YELLOW} 5)${WHITE} Install SSL"
-        echo -e "${YELLOW} 6)${WHITE} Uninstall Panel"
-        echo -e "${YELLOW} 7)${WHITE} Back"
+        echo -e "${YELLOW} 5)${WHITE} Uninstall Panel"
+        echo -e "${YELLOW} 6)${WHITE} Back"
         echo -e "${CYAN}──────────────────────────────────────────────${NC}"
         read -p "Select option: " opt
 
@@ -71,9 +70,8 @@ ptero_menu() {
                COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
                php artisan migrate --seed --force
                php artisan up ;;
-            5) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ssh.sh) ;;
-            6) rm -rf /var/www/pterodactyl && echo "Panel Removed." ;;
-            7) break ;;
+            5) rm -rf /var/www/pterodactyl && echo "Panel Removed." ;;
+            6) break ;;
             *) echo -e "${RED}Invalid option${NC}"; sleep 1 ;;
         esac
     done
