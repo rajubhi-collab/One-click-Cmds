@@ -2,7 +2,7 @@
 
 # ==========================================
 #  RAJBHAI — PTERODACTYL THEME MANAGER
-#  Nebula • Euphoria • Add Tool • Uninstall
+#  Themes • Extensions • Uninstall
 # ==========================================
 
 # --- Colors ---
@@ -16,6 +16,9 @@ WHITE="\e[1;37m"
 GRAY="\e[1;90m"
 RESET="\e[0m"
 BOLD="\e[1m"
+
+# --- Base URL for blueprint files ---
+BASE="https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/extensions"
 
 # --- Root Check ---
 if [[ $EUID -ne 0 ]]; then
@@ -31,14 +34,12 @@ if [ ! -d "/var/www/pterodactyl" ]; then
 fi
 
 # --- UI Helpers ---
-line() { echo -e "${MAGENTA}╠══════════════════════════════════════════════════╣${RESET}"; }
-
 header() {
     clear
     echo -e "${MAGENTA}╔══════════════════════════════════════════════════╗${RESET}"
     echo -e "${MAGENTA}║${RESET}  ${BOLD}${CYAN}🎨 PTERODACTYL THEME MANAGER${RESET}                  ${MAGENTA}║${RESET}"
     echo -e "${MAGENTA}║${RESET}  ${GRAY}Made By - RAJBHAI${RESET}                              ${MAGENTA}║${RESET}"
-    line
+    echo -e "${MAGENTA}╠══════════════════════════════════════════════════╣${RESET}"
     echo -e "${MAGENTA}║${RESET}  ${BLUE}User:${RESET} $(whoami)   ${BLUE}Host:${RESET} $(hostname)   ${BLUE}Time:${RESET} $(date +'%H:%M')  ${MAGENTA}║${RESET}"
     echo -e "${MAGENTA}╚══════════════════════════════════════════════════╝${RESET}"
     echo ""
@@ -56,42 +57,236 @@ info() { echo -e "  ${CYAN}➜ $1${RESET}"; }
 warn() { echo -e "  ${YELLOW}⚠ $1${RESET}"; }
 
 # ==========================================
-# UNINSTALL SUB-MENU
+# GENERIC INSTALL HELPER
+# Usage: bp_install "Display Name" "blueprint_id"
+# ==========================================
+bp_install() {
+    local name="$1" id="$2"
+    cd /var/www/pterodactyl || { fail "Panel path not found!"; pause; return; }
+    info "Downloading ${name}..."
+    wget -q "${BASE}/${id}.blueprint" -O "${id}.blueprint"
+    if [ ! -f "${id}.blueprint" ]; then
+        fail "Download failed for ${name}!"
+        pause; return
+    fi
+    info "Installing ${name} via Blueprint..."
+    yes "" | blueprint -i "${id}"
+    rm -f "${id}.blueprint"
+    ok "${name} installed successfully!"
+    pause
+}
+
+# ==========================================
+# THEMES
+# ==========================================
+install_nebula() {
+    header
+    echo -e "${GREEN}  ╔══════════════════════════════════════════════╗${RESET}"
+    echo -e "${GREEN}  ║${RESET}  ${BOLD}🚀 Installing Nebula Theme${RESET}                ${GREEN}║${RESET}"
+    echo -e "${GREEN}  ╚══════════════════════════════════════════════╝${RESET}"
+    echo ""
+    bp_install "Nebula" "nebula"
+}
+
+install_euphoria() {
+    header
+    echo -e "${CYAN}  ╔══════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}  ║${RESET}  ${BOLD}🌈 Installing Euphoria Theme${RESET}              ${CYAN}║${RESET}"
+    echo -e "${CYAN}  ╚══════════════════════════════════════════════╝${RESET}"
+    echo ""
+    bp_install "Euphoria" "euphoriatheme"
+}
+
+install_refreshtheme() {
+    header
+    echo -e "${BLUE}  ╔══════════════════════════════════════════════╗${RESET}"
+    echo -e "${BLUE}  ║${RESET}  ${BOLD}🔄 Installing Refresh Theme${RESET}               ${BLUE}║${RESET}"
+    echo -e "${BLUE}  ╚══════════════════════════════════════════════╝${RESET}"
+    echo ""
+    bp_install "Refresh Theme" "refreshtheme"
+}
+
+# ==========================================
+# EXTENSIONS SUBMENU
+# ==========================================
+
+install_ext() {
+    local label="$1" id="$2"
+    header
+    echo -e "${YELLOW}  ╔══════════════════════════════════════════════╗${RESET}"
+    echo -e "${YELLOW}  ║${RESET}  ${BOLD}🧩 Installing: ${label}${RESET}"
+    echo -e "${YELLOW}  ╚══════════════════════════════════════════════╝${RESET}"
+    echo ""
+    bp_install "${label}" "${id}"
+}
+
+install_all_extensions() {
+    header
+    echo -e "${MAGENTA}  ╔══════════════════════════════════════════════╗${RESET}"
+    echo -e "${MAGENTA}  ║${RESET}  ${BOLD}📦 Installing ALL Extensions...${RESET}           ${MAGENTA}║${RESET}"
+    echo -e "${MAGENTA}  ╚══════════════════════════════════════════════╝${RESET}"
+    echo ""
+    cd /var/www/pterodactyl || { fail "Panel path not found!"; pause; return; }
+
+    declare -A EXTS=(
+        ["MC Logs"]="mclogs"
+        ["MC Plugins"]="mcplugins"
+        ["MC Tools"]="mctools"
+        ["MC Player Manager"]="minecraftplayermanager"
+        ["Saga MC Player Manager"]="sagaminecraftplayermanager"
+        ["Version Changer"]="versionchanger"
+        ["Hux Register"]="huxregister"
+        ["Simple Favicons"]="simplefavicons"
+        ["Subdomains"]="subdomains"
+        ["Vanilla Tweaks"]="vanillatweaks"
+        ["Panel Statistics"]="pstatistics"
+    )
+
+    local ORDER=(
+        "mclogs" "mcplugins" "mctools"
+        "minecraftplayermanager" "sagaminecraftplayermanager"
+        "versionchanger" "huxregister" "simplefavicons"
+        "subdomains" "vanillatweaks" "pstatistics"
+    )
+    local NAMES=(
+        "MC Logs" "MC Plugins" "MC Tools"
+        "MC Player Manager" "Saga MC Player Manager"
+        "Version Changer" "Hux Register" "Simple Favicons"
+        "Subdomains" "Vanilla Tweaks" "Panel Statistics"
+    )
+
+    info "Downloading all extension blueprints..."
+    for id in "${ORDER[@]}"; do
+        wget -q "${BASE}/${id}.blueprint" -O "${id}.blueprint" && ok "Downloaded ${id}" || warn "Failed to download ${id}"
+    done
+
+    echo ""
+    info "Installing all extensions via Blueprint..."
+    for i in "${!ORDER[@]}"; do
+        local id="${ORDER[$i]}" lbl="${NAMES[$i]}"
+        if [ -f "${id}.blueprint" ]; then
+            yes "" | blueprint -i "${id}" &>/dev/null \
+                && ok "${lbl} installed" \
+                || warn "${lbl} failed"
+            rm -f "${id}.blueprint"
+        else
+            warn "Skipping ${lbl} (download failed)"
+        fi
+    done
+
+    ok "All extensions processed!"
+    pause
+}
+
+extensions_menu() {
+    while true; do
+        header
+        echo -e "  ${YELLOW}╔══════════════════════════════════════════════╗${RESET}"
+        echo -e "  ${YELLOW}║${RESET}          ${BOLD}${WHITE}🧩 EXTENSIONS MENU${RESET}                  ${YELLOW}║${RESET}"
+        echo -e "  ${YELLOW}╠══════════════════════════════════════════════╣${RESET}"
+        echo -e "  ${YELLOW}║${RESET}  ${GREEN}[1]${RESET}  MC Logs               ${GRAY}:: mclogs${RESET}"
+        echo -e "  ${YELLOW}║${RESET}  ${GREEN}[2]${RESET}  MC Plugins            ${GRAY}:: mcplugins${RESET}"
+        echo -e "  ${YELLOW}║${RESET}  ${GREEN}[3]${RESET}  MC Tools              ${GRAY}:: mctools${RESET}"
+        echo -e "  ${YELLOW}║${RESET}  ${GREEN}[4]${RESET}  MC Player Manager     ${GRAY}:: minecraftplayermanager${RESET}"
+        echo -e "  ${YELLOW}║${RESET}  ${GREEN}[5]${RESET}  Saga MC Player Mgr    ${GRAY}:: sagaminecraftplayermanager${RESET}"
+        echo -e "  ${YELLOW}║${RESET}  ${GREEN}[6]${RESET}  Version Changer       ${GRAY}:: versionchanger${RESET}"
+        echo -e "  ${YELLOW}║${RESET}  ${GREEN}[7]${RESET}  Hux Register          ${GRAY}:: huxregister${RESET}"
+        echo -e "  ${YELLOW}║${RESET}  ${GREEN}[8]${RESET}  Simple Favicons       ${GRAY}:: simplefavicons${RESET}"
+        echo -e "  ${YELLOW}║${RESET}  ${GREEN}[9]${RESET}  Subdomains            ${GRAY}:: subdomains${RESET}"
+        echo -e "  ${YELLOW}║${RESET}  ${GREEN}[10]${RESET} Vanilla Tweaks        ${GRAY}:: vanillatweaks${RESET}"
+        echo -e "  ${YELLOW}║${RESET}  ${GREEN}[11]${RESET} Panel Statistics      ${GRAY}:: pstatistics${RESET}"
+        echo -e "  ${YELLOW}║${RESET}"
+        echo -e "  ${YELLOW}║${RESET}  ${MAGENTA}[12]${RESET} 📦 Install ALL Extensions"
+        echo -e "  ${YELLOW}║${RESET}  ${WHITE}[0]${RESET}  Back"
+        echo -e "  ${YELLOW}╚══════════════════════════════════════════════╝${RESET}"
+        echo ""
+        read -p "  Choose → " eopt
+
+        case "$eopt" in
+            1)  install_ext "MC Logs"             "mclogs" ;;
+            2)  install_ext "MC Plugins"          "mcplugins" ;;
+            3)  install_ext "MC Tools"            "mctools" ;;
+            4)  install_ext "MC Player Manager"   "minecraftplayermanager" ;;
+            5)  install_ext "Saga MC Player Mgr"  "sagaminecraftplayermanager" ;;
+            6)  install_ext "Version Changer"     "versionchanger" ;;
+            7)  install_ext "Hux Register"        "huxregister" ;;
+            8)  install_ext "Simple Favicons"     "simplefavicons" ;;
+            9)  install_ext "Subdomains"          "subdomains" ;;
+            10) install_ext "Vanilla Tweaks"      "vanillatweaks" ;;
+            11) install_ext "Panel Statistics"    "pstatistics" ;;
+            12) install_all_extensions ;;
+            0)  break ;;
+            *)  warn "Invalid option"; sleep 1 ;;
+        esac
+    done
+}
+
+# ==========================================
+# UNINSTALL SUBMENU
 # ==========================================
 uninstall_menu() {
     while true; do
         header
-        echo -e "  ${RED}╔════════════════════════════════════════╗${RESET}"
-        echo -e "  ${RED}║${RESET}       ${BOLD}${WHITE}🗑  UNINSTALL THEMES${RESET}              ${RED}║${RESET}"
-        echo -e "  ${RED}╠════════════════════════════════════════╣${RESET}"
-        echo -e "  ${RED}║${RESET}  ${YELLOW}[1]${RESET} Remove Nebula"
-        echo -e "  ${RED}║${RESET}  ${YELLOW}[2]${RESET} Remove Euphoria"
-        echo -e "  ${RED}║${RESET}  ${YELLOW}[3]${RESET} Remove Add Tool Package"
-        echo -e "  ${RED}║${RESET}  ${WHITE}[0]${RESET} Back"
-        echo -e "  ${RED}╚════════════════════════════════════════╝${RESET}"
+        echo -e "  ${RED}╔══════════════════════════════════════════════╗${RESET}"
+        echo -e "  ${RED}║${RESET}       ${BOLD}${WHITE}🗑  UNINSTALL MENU${RESET}                    ${RED}║${RESET}"
+        echo -e "  ${RED}╠══════════════════════════════════════════════╣${RESET}"
+        echo -e "  ${RED}║${RESET}  ${YELLOW}[1]${RESET}  Remove Nebula"
+        echo -e "  ${RED}║${RESET}  ${YELLOW}[2]${RESET}  Remove Euphoria"
+        echo -e "  ${RED}║${RESET}  ${YELLOW}[3]${RESET}  Remove Refresh Theme"
+        echo -e "  ${RED}║${RESET}  ${YELLOW}[4]${RESET}  Remove MC Logs"
+        echo -e "  ${RED}║${RESET}  ${YELLOW}[5]${RESET}  Remove MC Plugins"
+        echo -e "  ${RED}║${RESET}  ${YELLOW}[6]${RESET}  Remove MC Tools"
+        echo -e "  ${RED}║${RESET}  ${YELLOW}[7]${RESET}  Remove MC Player Manager"
+        echo -e "  ${RED}║${RESET}  ${YELLOW}[8]${RESET}  Remove Saga MC Player Manager"
+        echo -e "  ${RED}║${RESET}  ${YELLOW}[9]${RESET}  Remove Version Changer"
+        echo -e "  ${RED}║${RESET}  ${YELLOW}[10]${RESET} Remove Hux Register"
+        echo -e "  ${RED}║${RESET}  ${YELLOW}[11]${RESET} Remove Simple Favicons"
+        echo -e "  ${RED}║${RESET}  ${YELLOW}[12]${RESET} Remove Subdomains"
+        echo -e "  ${RED}║${RESET}  ${YELLOW}[13]${RESET} Remove Vanilla Tweaks"
+        echo -e "  ${RED}║${RESET}  ${YELLOW}[14]${RESET} Remove Panel Statistics"
+        echo -e "  ${RED}║${RESET}"
+        echo -e "  ${RED}║${RESET}  ${RED}[15]${RESET} 🗑  Remove ALL"
+        echo -e "  ${RED}║${RESET}  ${WHITE}[0]${RESET}  Back"
+        echo -e "  ${RED}╚══════════════════════════════════════════════╝${RESET}"
         echo ""
         read -p "  Choose → " uopt
 
+        bp_remove() {
+            local lbl="$1" id="$2"
+            cd /var/www/pterodactyl || { fail "Panel path not found!"; return; }
+            info "Removing ${lbl}..."
+            blueprint -r "${id}" && ok "${lbl} removed!" || fail "Failed to remove ${lbl}"
+        }
+
         case "$uopt" in
-            1)
-                info "Removing Nebula theme..."
-                cd /var/www/pterodactyl || { fail "Panel path not found!"; sleep 2; continue; }
-                blueprint -r nebula && ok "Nebula removed!" || fail "Failed to remove Nebula"
-                pause
-                ;;
-            2)
-                info "Removing Euphoria theme..."
-                cd /var/www/pterodactyl || { fail "Panel path not found!"; sleep 2; continue; }
-                blueprint -r euphoriatheme && ok "Euphoria removed!" || fail "Failed to remove Euphoria"
-                pause
-                ;;
-            3)
-                info "Removing Add Tool package..."
-                cd /var/www/pterodactyl || { fail "Panel path not found!"; sleep 2; continue; }
-                blueprint -r versionchanger
-                blueprint -r mcplugins
-                blueprint -r sagaminecraftplayermanager
-                ok "Add Tool package removed!"
+            1)  bp_remove "Nebula"                "nebula";                     pause ;;
+            2)  bp_remove "Euphoria"              "euphoriatheme";              pause ;;
+            3)  bp_remove "Refresh Theme"         "refreshtheme";               pause ;;
+            4)  bp_remove "MC Logs"               "mclogs";                     pause ;;
+            5)  bp_remove "MC Plugins"            "mcplugins";                  pause ;;
+            6)  bp_remove "MC Tools"              "mctools";                    pause ;;
+            7)  bp_remove "MC Player Manager"     "minecraftplayermanager";     pause ;;
+            8)  bp_remove "Saga MC Player Mgr"    "sagaminecraftplayermanager"; pause ;;
+            9)  bp_remove "Version Changer"       "versionchanger";             pause ;;
+            10) bp_remove "Hux Register"          "huxregister";                pause ;;
+            11) bp_remove "Simple Favicons"       "simplefavicons";             pause ;;
+            12) bp_remove "Subdomains"            "subdomains";                 pause ;;
+            13) bp_remove "Vanilla Tweaks"        "vanillatweaks";              pause ;;
+            14) bp_remove "Panel Statistics"      "pstatistics";                pause ;;
+            15)
+                echo -e "${RED}  ⚠  This will remove ALL themes and extensions!${RESET}"
+                read -p "  Type 'yes' to confirm: " confirm
+                if [[ "$confirm" == "yes" ]]; then
+                    cd /var/www/pterodactyl || { fail "Panel path not found!"; pause; continue; }
+                    for id in nebula euphoriatheme refreshtheme mclogs mcplugins mctools \
+                               minecraftplayermanager sagaminecraftplayermanager versionchanger \
+                               huxregister simplefavicons subdomains vanillatweaks pstatistics; do
+                        blueprint -r "$id" &>/dev/null && ok "Removed $id" || warn "Skipped $id (not installed)"
+                    done
+                    ok "All removed!"
+                else
+                    warn "Cancelled."
+                fi
                 pause
                 ;;
             0) break ;;
@@ -101,80 +296,18 @@ uninstall_menu() {
 }
 
 # ==========================================
-# INSTALL ACTIONS
-# ==========================================
-install_nebula() {
-    header
-    echo -e "${GREEN}  ╔══════════════════════════════════════════════╗${RESET}"
-    echo -e "${GREEN}  ║${RESET}  ${BOLD}🚀 Installing Nebula Theme...${RESET}             ${GREEN}║${RESET}"
-    echo -e "${GREEN}  ╚══════════════════════════════════════════════╝${RESET}"
-    echo ""
-    cd /var/www/pterodactyl || { fail "Panel path not found!"; pause; return; }
-    info "Downloading Nebula blueprint..."
-    wget -q https://github.com/ItsKek/nebulatheme/releases/latest/download/nebula.blueprint -O nebula.blueprint \
-        || wget -q https://github.com/nobita329/The-Coding-Hub/raw/refs/heads/main/srv/thame/nebula.blueprint
-    if [ ! -f nebula.blueprint ]; then fail "Download failed!"; pause; return; fi
-    info "Installing with Blueprint..."
-    yes "" | blueprint -i nebula
-    rm -f nebula.blueprint
-    ok "Nebula installed successfully!"
-    pause
-}
-
-install_euphoria() {
-    header
-    echo -e "${CYAN}  ╔══════════════════════════════════════════════╗${RESET}"
-    echo -e "${CYAN}  ║${RESET}  ${BOLD}🌈 Installing Euphoria Theme...${RESET}           ${CYAN}║${RESET}"
-    echo -e "${CYAN}  ╚══════════════════════════════════════════════╝${RESET}"
-    echo ""
-    cd /var/www/pterodactyl || { fail "Panel path not found!"; pause; return; }
-    info "Downloading Euphoria blueprint..."
-    wget -q https://github.com/nobita329/The-Coding-Hub/raw/refs/heads/main/srv/thame/euphoriatheme.blueprint
-    if [ ! -f euphoriatheme.blueprint ]; then fail "Download failed!"; pause; return; fi
-    info "Installing with Blueprint..."
-    blueprint -i euphoriatheme
-    rm -f euphoriatheme.blueprint
-    ok "Euphoria installed successfully!"
-    pause
-}
-
-install_addtool() {
-    header
-    echo -e "${YELLOW}  ╔══════════════════════════════════════════════╗${RESET}"
-    echo -e "${YELLOW}  ║${RESET}  ${BOLD}🛠  Installing Add Tool Package...${RESET}        ${YELLOW}║${RESET}"
-    echo -e "${YELLOW}  ╚══════════════════════════════════════════════╝${RESET}"
-    echo ""
-    cd /var/www/pterodactyl || { fail "Panel path not found!"; pause; return; }
-
-    info "Downloading blueprint extensions..."
-    wget -q https://github.com/nobita329/The-Coding-Hub/raw/refs/heads/main/srv/thame/versionchanger.blueprint
-    wget -q https://github.com/nobita329/The-Coding-Hub/raw/refs/heads/main/srv/thame/mcplugins.blueprint
-    wget -q https://github.com/nobita329/The-Coding-Hub/raw/refs/heads/main/srv/thame/sagaminecraftplayermanager.blueprint
-    wget -q https://github.com/nobita329/The-Coding-Hub/raw/refs/heads/main/srv/thame/huxregister.blueprint
-
-    info "Installing extensions via Blueprint..."
-    blueprint -i versionchanger   && ok "versionchanger installed"   || warn "versionchanger failed"
-    blueprint -i mcplugins        && ok "mcplugins installed"        || warn "mcplugins failed"
-    blueprint -i sagaminecraftplayermanager && ok "MC Player Manager installed" || warn "MC Player Manager failed"
-    blueprint -i huxregister      && ok "huxregister installed"      || warn "huxregister failed"
-
-    rm -f versionchanger.blueprint mcplugins.blueprint sagaminecraftplayermanager.blueprint huxregister.blueprint
-    ok "Add Tool package complete!"
-    pause
-}
-
-# ==========================================
-# MAIN MENU LOOP
+# MAIN MENU
 # ==========================================
 while true; do
     header
     echo -e "  ${CYAN}╔══════════════════════════════════════════════╗${RESET}"
     echo -e "  ${CYAN}║${RESET}          ${BOLD}${WHITE}SELECT A THEME ACTION${RESET}              ${CYAN}║${RESET}"
     echo -e "  ${CYAN}╠══════════════════════════════════════════════╣${RESET}"
-    echo -e "  ${CYAN}║${RESET}  ${GREEN}[1]${RESET} 🚀 Nebula         ${GRAY}:: Auto Install${RESET}"
-    echo -e "  ${CYAN}║${RESET}  ${GREEN}[2]${RESET} 🌈 Euphoria       ${GRAY}:: Auto Install${RESET}"
-    echo -e "  ${CYAN}║${RESET}  ${YELLOW}[3]${RESET} 🛠  Add Tool       ${GRAY}:: Extension Pack${RESET}"
-    echo -e "  ${CYAN}║${RESET}  ${RED}[4]${RESET} 🗑  Uninstall      ${GRAY}:: Remove Themes${RESET}"
+    echo -e "  ${CYAN}║${RESET}  ${GREEN}[1]${RESET} 🚀 Nebula          ${GRAY}:: Theme${RESET}"
+    echo -e "  ${CYAN}║${RESET}  ${GREEN}[2]${RESET} 🌈 Euphoria        ${GRAY}:: Theme${RESET}"
+    echo -e "  ${CYAN}║${RESET}  ${GREEN}[3]${RESET} 🔄 Refresh Theme   ${GRAY}:: Theme${RESET}"
+    echo -e "  ${CYAN}║${RESET}  ${YELLOW}[4]${RESET} 🧩 Extensions      ${GRAY}:: 11 Extensions${RESET}"
+    echo -e "  ${CYAN}║${RESET}  ${RED}[5]${RESET} 🗑  Uninstall       ${GRAY}:: Remove Themes/Extensions${RESET}"
     echo -e "  ${CYAN}║${RESET}"
     echo -e "  ${CYAN}║${RESET}  ${WHITE}[0]${RESET} Exit"
     echo -e "  ${CYAN}╚══════════════════════════════════════════════╝${RESET}"
@@ -184,8 +317,9 @@ while true; do
     case "$opt" in
         1) install_nebula ;;
         2) install_euphoria ;;
-        3) install_addtool ;;
-        4) uninstall_menu ;;
+        3) install_refreshtheme ;;
+        4) extensions_menu ;;
+        5) uninstall_menu ;;
         0) echo -e "\n${CYAN}  Goodbye! 🚀${RESET}"; exit 0 ;;
         *) warn "Invalid option, try again."; sleep 1 ;;
     esac
