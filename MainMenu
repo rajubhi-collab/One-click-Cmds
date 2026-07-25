@@ -1,7 +1,7 @@
 #!/bin/bash
 # ===========================================================
 # RAJBHAI Terminal Control Panel
-# Mode By - RAJBHAI
+# Made By - RAJBHAI
 # ===========================================================
 
 # --- COLORS ---
@@ -40,39 +40,114 @@ echo -e "${C2}██║  ██║██║  ██║╚█████╔╝�
 echo -e "${C2}╚═╝  ╚═╝╚═╝  ╚═╝ ╚════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝${NC}"
 echo
 echo -e "${C3}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "                 ${BOLD}Mode By - RAJBHAI${NC}"
+echo -e "                 ${BOLD}Made By - RAJBHAI${NC}"
 echo -e "${C1}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo
 }
 
 # ===================== PTERODACTYL MENU =====================
 ptero_menu() {
-    while true; do 
+    while true; do
         banner
-        echo -e "${CYAN}────────────── PTERODACTYL MENU ──────────────${NC}"
-        echo -e "${YELLOW} 1)${WHITE} Install Panel"
-        echo -e "${YELLOW} 2)${WHITE} Install Wings"
-        echo -e "${YELLOW} 3)${WHITE} Create User"
-        echo -e "${YELLOW} 4)${WHITE} Update Panel"
-        echo -e "${YELLOW} 5)${WHITE} Uninstall Panel"
-        echo -e "${YELLOW} 6)${WHITE} Back"
-        echo -e "${CYAN}──────────────────────────────────────────────${NC}"
-        read -p "Select option: " opt
+
+        # Live panel & wings status
+        if [ -d "/var/www/pterodactyl" ]; then
+            PTERO_STATUS="${GREEN}INSTALLED ✔${NC}"
+        else
+            PTERO_STATUS="${RED}NOT INSTALLED ✘${NC}"
+        fi
+
+        if systemctl is-active --quiet wings 2>/dev/null; then
+            WINGS_STATUS="${GREEN}RUNNING ✔${NC}"
+        elif [ -f /usr/local/bin/wings ]; then
+            WINGS_STATUS="${YELLOW}STOPPED ◉${NC}"
+        else
+            WINGS_STATUS="${RED}NOT INSTALLED ✘${NC}"
+        fi
+
+        echo -e "${CYAN}╔══════════════════════════════════════════════════╗${NC}"
+        echo -e "${CYAN}║${NC}      ${BOLD}${WHITE}⚡ PTERODACTYL PANEL MANAGER${NC}              ${CYAN}║${NC}"
+        echo -e "${CYAN}╠══════════════════════════════════════════════════╣${NC}"
+        echo -e "${CYAN}║${NC}  Panel  : $(echo -e $PTERO_STATUS)"
+        echo -e "${CYAN}║${NC}  Wings  : $(echo -e $WINGS_STATUS)"
+        echo -e "${CYAN}╠══════════════════════════════════════════════════╣${NC}"
+        echo -e "${CYAN}║${NC}  ${GREEN}[1]${NC} Install Panel     ${GRAY}:: Fresh Install${NC}"
+        echo -e "${CYAN}║${NC}  ${GREEN}[2]${NC} Install Wings     ${GRAY}:: Daemon Installer${NC}"
+        echo -e "${CYAN}║${NC}  ${GREEN}[3]${NC} Create User       ${GRAY}:: Add Admin/User${NC}"
+        echo -e "${CYAN}║${NC}  ${YELLOW}[4]${NC} Update Panel      ${GRAY}:: Latest Release${NC}"
+        echo -e "${CYAN}║${NC}  ${BLUE}[5]${NC} Domain / SSL      ${GRAY}:: Change Domain/SSL${NC}"
+        echo -e "${CYAN}║${NC}  ${RED}[6]${NC} Uninstall Panel   ${GRAY}:: Remove All Data${NC}"
+        echo -e "${CYAN}║${NC}  ${WHITE}[7]${NC} Back"
+        echo -e "${CYAN}╚══════════════════════════════════════════════════╝${NC}"
+        echo ""
+        read -p "  Select → " opt
 
         case $opt in
-            1) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/install.sh) ;;
-            2) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/wings) ;;
-            3) cd /var/www/pterodactyl 2>/dev/null && php artisan p:user:make ;;
-            4) cd /var/www/pterodactyl || { echo "Panel not installed!"; sleep 2; continue; }
-               php artisan down
-               curl -Lo panel.tar.gz https://github.com/pterodactyl/panel/releases/latest/download/panel.tar.gz
-               tar -xzvf panel.tar.gz
-               COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
-               php artisan migrate --seed --force
-               php artisan up ;;
-            5) rm -rf /var/www/pterodactyl && echo "Panel Removed." ;;
-            6) break ;;
-            *) echo -e "${RED}Invalid option${NC}"; sleep 1 ;;
+            1)
+                bash <(curl -fsSL https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/install.sh)
+                ;;
+            2)
+                bash <(curl -fsSL https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/wings)
+                ;;
+            3)
+                if [ ! -d /var/www/pterodactyl ]; then
+                    echo -e "${RED}  Panel not installed!${NC}"; sleep 2; continue
+                fi
+                cd /var/www/pterodactyl && php artisan p:user:make
+                read -p "  Press Enter to continue..."
+                ;;
+            4)
+                if [ ! -d /var/www/pterodactyl ]; then
+                    echo -e "${RED}  Panel not installed!${NC}"; sleep 2; continue
+                fi
+                echo -e "${YELLOW}  ➜ Updating panel to latest release...${NC}"
+                cd /var/www/pterodactyl
+                php artisan down
+                curl -Lo panel.tar.gz https://github.com/pterodactyl/panel/releases/latest/download/panel.tar.gz
+                tar -xzf panel.tar.gz
+                rm -f panel.tar.gz
+                chmod -R 755 storage/* bootstrap/cache/
+                COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
+                php artisan view:clear
+                php artisan config:clear
+                php artisan migrate --seed --force
+                chown -R www-data:www-data /var/www/pterodactyl/*
+                php artisan queue:restart
+                php artisan up
+                echo -e "${GREEN}  ✔ Panel updated successfully!${NC}"
+                read -p "  Press Enter to continue..."
+                ;;
+            5)
+                bash <(curl -fsSL https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ssl.sh)
+                read -p "  Press Enter to continue..."
+                ;;
+            6)
+                echo -e "${RED}  ⚠  WARNING: This will permanently delete ALL panel data!${NC}"
+                read -p "  Type 'yes' to confirm: " confirm
+                if [[ "$confirm" == "yes" ]]; then
+                    echo -e "${YELLOW}  Stopping services...${NC}"
+                    systemctl stop pteroq.service 2>/dev/null || true
+                    systemctl disable pteroq.service 2>/dev/null || true
+                    rm -f /etc/systemd/system/pteroq.service
+                    systemctl daemon-reload
+                    echo -e "${YELLOW}  Removing cron jobs...${NC}"
+                    crontab -l 2>/dev/null | grep -v 'pterodactyl/artisan' | crontab - || true
+                    echo -e "${YELLOW}  Deleting panel files...${NC}"
+                    rm -rf /var/www/pterodactyl
+                    echo -e "${YELLOW}  Dropping database...${NC}"
+                    mariadb -u root -e "DROP DATABASE IF EXISTS panel; DROP USER IF EXISTS 'pterodactyl'@'127.0.0.1'; FLUSH PRIVILEGES;" 2>/dev/null || \
+                    mysql -u root -e "DROP DATABASE IF EXISTS panel; DROP USER IF EXISTS 'pterodactyl'@'127.0.0.1'; FLUSH PRIVILEGES;" 2>/dev/null || true
+                    echo -e "${YELLOW}  Cleaning Nginx config...${NC}"
+                    rm -f /etc/nginx/sites-enabled/pterodactyl.conf /etc/nginx/sites-available/pterodactyl.conf
+                    systemctl reload nginx 2>/dev/null || true
+                    echo -e "${GREEN}  ✔ Panel removed successfully.${NC}"
+                else
+                    echo -e "${YELLOW}  Cancelled.${NC}"
+                fi
+                sleep 2
+                ;;
+            7) break ;;
+            *) echo -e "${RED}  Invalid option${NC}"; sleep 1 ;;
         esac
     done
 }
@@ -96,10 +171,10 @@ tools_menu(){
         case $t in
             1) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/tools/root.sh); pause ;;
             2) curl -fsSL https://tailscale.com/install.sh | sh; pause ;;
-            3) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ssh.sh); pause ;;
+            3) bash <(curl -fsSL https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ssh.sh); pause ;;
             4) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/tools/SYSTEM.sh); pause ;;
             5) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/lxd%20installer); pause ;;
-            6) bash <(curl -s https://raw.githubusercontent.com/nobita329/The-Coding-Hub/refs/heads/main/srv/tools/rdp.sh); pause ;;
+            6) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/tools/rdp.sh); pause ;;
             7) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/tools/cloudflare.sh); pause ;;
             8) break;;
             *) echo -e "${RED}Invalid${NC}"; pause;;
