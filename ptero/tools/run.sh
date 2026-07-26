@@ -66,35 +66,35 @@ tools_menu() {
         case $t in
             1) 
                 echo -e "\n${YELLOW}Running Root Access Script...${NC}"
-                bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/tools/root.sh) 
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/tools/root.sh) 
                 pause ;;
             2) 
                 echo -e "\n${YELLOW}Running Tailscale Installer...${NC}"
-                bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/tools/tailscale.sh) 
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/tools/tailscale.sh) 
                 pause ;;
             3) 
                 echo -e "\n${YELLOW}Running Zerotier Installer...${NC}"
-                bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/tools/zerotier.sh) 
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/tools/zerotier.sh) 
                 pause ;;
             4) 
                 echo -e "\n${YELLOW}Running Cloudflare Script...${NC}"
-                bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/tools/cloudflare.sh) 
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/tools/cloudflare.sh) 
                 pause ;;
             5) 
                 echo -e "\n${YELLOW}Fetching System Info...${NC}"
-                bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/tools/info.sh) 
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/tools/info.sh) 
                 pause ;;
             6) 
                 echo -e "\n${YELLOW}Running tcp Optimizer...${NC}"
-                bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/tools/localtonet.sh) 
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/tools/localtonet.sh) 
                 pause ;;
             7) 
                 echo -e "\n${YELLOW}Installing Web Terminal...${NC}"
-                bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/tools/terminal.sh) 
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/tools/terminal.sh) 
                 pause ;;
             8) 
                 echo -e "\n${YELLOW}Installing RDP...${NC}"
-                bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/Hub-of-raj/refs/heads/main/srv/tools/rdp.sh) 
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/tools/rdp.sh) 
                 pause ;;
              9) 
                 echo -e "\n${YELLOW}Installing SSL...${NC}"

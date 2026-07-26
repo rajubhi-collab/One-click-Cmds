@@ -50,7 +50,7 @@ install_ptero() {
     status_msg "INFO" "Initiating installation script..."
     sleep 1
 
-    bash <(curl -fsSL https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/install.sh)
+    bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/install.sh)
 
     echo ""
     status_msg "OK" "Installation Sequence Complete."
@@ -173,7 +173,7 @@ update_panel() {
 # ================= DOMAIN / SSL =================
 domain_ssl() {
     show_header "DOMAIN / SSL"
-    bash <(curl -fsSL https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ssl.sh)
+    bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ssl.sh)
     pause
 }
 

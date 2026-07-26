@@ -66,21 +66,21 @@ pause() {
 blueprint1() {
   header
   echo -e "\n${BG} [ ACTION STARTED ] ${N} ${W}Running Blueprint 1...${N}\n"
-  bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/Hub-of-raj/refs/heads/main/srv/thame/blueprint.sh)
+  bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/thame/blueprint.sh)
   pause
 }
 
 blueprint2() {
   header
   echo -e "\n${BY} [ ACTION STARTED ] ${N} ${W}Running Blueprint 2 (Rebuild)...${N}\n"
-  bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/Hub-of-raj/refs/heads/main/srv/thame/blueprint-2.sh)
+  bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/thame/blueprint-2.sh)
   pause
 }
 
 autofix() {
     header
     echo -e "\n${BM} [ DIAGNOSTICS ] ${N} ${W}Attempting Auto-Fix...${N}\n"
-    bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/Hub-of-raj/refs/heads/main/srv/thame/fix.sh)
+    bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/thame/fix.sh)
     pause
 }
 
@@ -112,7 +112,7 @@ while true; do
     1) blueprint1 ;;
     2) blueprint2 ;;
     3) autofix ;;
-    4) bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/thame/hyperv1.sh) ;;
+    4) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/thame/hyperv1.sh) ;;
     0) 
        echo -e "\n${M} 👋 Exiting... Panel shant ho gaya.${N}"
        sleep 0.5

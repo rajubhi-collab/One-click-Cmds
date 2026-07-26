@@ -72,13 +72,13 @@ while true; do
     render_ui
     read -r opt
     case $opt in
-        1) bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/vps/run.sh) ;;
-        2) bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/panel/run.sh) ;;
-        3) bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/wings/run.sh) ;;
-        4) bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/tools/run.sh) ;;
-        5) bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/thames/chang/dev.sh) ;;
-        6) bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/Hub-of-raj/refs/heads/main/srv/menu/System1.sh) ;;
-        7) bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/no-kvm/run.sh) ;;
+        1) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/vps/run.sh) ;;
+        2) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/panel/run.sh) ;;
+        3) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/wings/run.sh) ;;
+        4) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/tools/run.sh) ;;
+        5) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/thames/chang/dev.sh) ;;
+        6) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/menu/System1.sh) ;;
+        7) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/no-kvm/run.sh) ;;
         8|exit) 
             echo -e "\n  ${B_RED}DISCONNECTED.${NC} Goodbye, RAJBHAI."
             exit 0 ;;

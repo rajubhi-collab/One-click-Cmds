@@ -291,7 +291,7 @@ while true; do
         5) status_services ;;
         6) change_vnc_password ;;
         7) install_browsers ;;
-        8) bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/tools/rxd.sh)  ;;
+        8) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/tools/rxd.sh)  ;;
         9) uninstall_all ;;
         0) echo -e "${G}Goodbye!${N}"; exit 0 ;;
         *) echo -e "${R}Invalid option${N}"; sleep 1 ;;

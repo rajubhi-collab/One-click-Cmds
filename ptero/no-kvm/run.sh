@@ -60,13 +60,13 @@ while true; do
     read -r choice
 
     case $choice in
-        1) execute_script "https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/no-kvm/cockpit/run.sh" "cockpit" ;;
-        2) execute_script "https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/no-kvm/SSH.sh" "shellngn" ;;
-        3) execute_script "https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/no-kvm/kali-rdp.sh" "kali-rdp" ;;
-        4) execute_script "https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/no-kvm/win16.sh" "windows2016" ;;
-        5) execute_script "https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/no-kvm/tailscale.sh" "tailscale" ;;
-        6) execute_script "https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/no-kvm/localtonet.sh" "localtonet" ;;
-        7) execute_script "https://raw.githubusercontent.com/rajbhai-collab/Hub-of-raj/refs/heads/main/contenar/poxmox.sh" "proxmox" ;;
+        1) execute_script "https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/no-kvm/cockpit/run.sh" "cockpit" ;;
+        2) execute_script "https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/no-kvm/SSH.sh" "shellngn" ;;
+        3) execute_script "https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/no-kvm/kali-rdp.sh" "kali-rdp" ;;
+        4) execute_script "https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/no-kvm/win16.sh" "windows2016" ;;
+        5) execute_script "https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/no-kvm/tailscale.sh" "tailscale" ;;
+        6) execute_script "https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/no-kvm/localtonet.sh" "localtonet" ;;
+        7) execute_script "https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/contenar/poxmox.sh" "proxmox" ;;
         8) exit 0 ;;
         *) echo -e "${B_RED}Invalid!${NC}" ; sleep 1 ;;
     esac

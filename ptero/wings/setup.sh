@@ -48,10 +48,10 @@ while true; do
             sleep 1
             
             # Run Config Script
-            bash <(curl -fsSL https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/wings/config.sh)
+            bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/wings/config.sh)
             
             # Run Manager Script
-            bash <(curl -fsSL https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/wings/Manag)
+            bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/wings/Manag)
             
             echo ""
             echo -e "${GREEN}>> Setup Complete! Press Enter to return to menu.${NC}"
@@ -80,7 +80,7 @@ while true; do
                 systemctl restart wings
                 
                 echo -e "${GREEN}>> Fetching Manager...${NC}"
-                bash <(curl -fsSL https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/wings/Manag)
+                bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/wings/Manag)
             fi
             
             echo ""

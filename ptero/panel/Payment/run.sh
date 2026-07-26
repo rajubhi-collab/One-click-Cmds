@@ -45,7 +45,7 @@ install_paymenter() {
     echo "⏳ This may take a few minutes..."
     
     # Run the Paymenter install script
-    bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/panel/Payment/install.sh)
+    bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/panel/Payment/install.sh)
     
     printf "${GREEN}║                                                              ║\n"
     printf "║${WHITE}          ✅ INSTALLATION PROCESS COMPLETE!              ${GREEN}║\n"

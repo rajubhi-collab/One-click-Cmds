@@ -63,31 +63,31 @@ panel_menu() {
         # Logic
         case $p in
             1) 
-                bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/Hub-of-raj/refs/heads/main/srv/Uninstall/unFEATHERPANEL.sh) 
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/Uninstall/unFEATHERPANEL.sh) 
                 pause ;;
             2) 
-                bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/panel/pterodactyl/run.sh) 
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/panel/pterodactyl/run.sh) 
                 pause ;;
             3) 
-                bash <(curl -fsSL https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ptero/panel/Jexactyl/run.sh)
+                bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/panel/Jexactyl/run.sh)
                 pause ;;
             4) 
-                bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/Hub-of-raj/refs/heads/main/srv/Uninstall/unJexactyl.sh) 
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/Uninstall/unJexactyl.sh) 
                 pause ;;
             5) 
-                bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/Hub-of-raj/refs/heads/main/srv/Uninstall/undash-3.sh) 
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/Uninstall/undash-3.sh) 
                 pause ;;
             6) 
-                bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/Hub-of-raj/refs/heads/main/srv/Uninstall/dash-v4.sh) 
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/Uninstall/dash-v4.sh) 
                 pause ;;
             7) 
-                bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/Hub-of-raj/refs/heads/main/srv/Uninstall/unPaymenter.sh) 
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/Uninstall/unPaymenter.sh) 
                 pause ;;
             8) 
                 bash <(curl -s https://raw.githubusercontent.com/nobita54/-150/refs/heads/main/Uninstall/unCtrlPanel.sh) 
                 pause ;;
             9) 
-                bash <(curl -s https://raw.githubusercontent.com/rajbhai-collab/Hub-of-raj/refs/heads/main/srv/Uninstall/unReviactyl.sh) 
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/Uninstall/unReviactyl.sh) 
                 pause ;;
             10) 
                 bash <(curl -s https://raw.githubusercontent.com/yourlink/t-panel.sh) 
