@@ -154,7 +154,7 @@ ptero_menu() {
 
 # ===================== THEME INSTALLER MENU =====================
 theme_menu() {
-    local TM_URL="https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/theme-manager.sh"
+    local TM_URL="https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/theme-manager.sh"
     while true; do
         banner
         echo -e "${MAGENTA}╔══════════════════════════════════════════════════╗${NC}"
