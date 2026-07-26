@@ -16,8 +16,11 @@ WHITE="\e[1;37m"
 GRAY="\e[1;90m"
 DIM="\e[2m"
 
+CURRENT_STEP=0
+TOTAL_STEPS=17
+
 line(){ echo -e "${GRAY}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"; }
-step(){ echo -e "\n${BLUE}▶ $1${RESET}\n  ${DIM}╰─ $2${RESET}"; }
+step(){ CURRENT_STEP=$((CURRENT_STEP+1)); echo -e "\n${BLUE}[${CURRENT_STEP}/${TOTAL_STEPS}] ▶ $1${RESET}\n  ${DIM}╰─ $2${RESET}"; }
 ok(){ echo -e "  ${GREEN}✔ $1${RESET}"; }
 warn(){ echo -e "  ${YELLOW}⚠ $1${RESET}"; }
 fail(){ echo -e "  ${RED}✖ $1${RESET}"; }
@@ -344,7 +347,29 @@ step "Admin User" "Create your first administrator account"
 deploy_bar
 echo ""
 cd /var/www/pterodactyl
-php artisan p:user:make
+
+line
+echo -e "${CYAN}>> ADMIN ACCOUNT SETUP <<${RESET}"
+echo ""
+read -p "  Email Address : " ADMIN_EMAIL
+read -p "  First Name    : " ADMIN_FNAME
+read -p "  Last Name     : " ADMIN_LNAME
+read -p "  Username      : " ADMIN_USERNAME
+while true; do
+    read -sp "  Password      : " ADMIN_PASSWORD; echo ""
+    read -sp "  Confirm Pass  : " ADMIN_PASSWORD2; echo ""
+    [[ "$ADMIN_PASSWORD" == "$ADMIN_PASSWORD2" ]] && break
+    warn "Passwords do not match. Try again."
+done
+echo ""
+
+php artisan p:user:make \
+    --email="$ADMIN_EMAIL" \
+    --username="$ADMIN_USERNAME" \
+    --name-first="$ADMIN_FNAME" \
+    --name-last="$ADMIN_LNAME" \
+    --password="$ADMIN_PASSWORD" \
+    --admin=1
 
 # -------- DONE --------
 echo ""
@@ -353,13 +378,22 @@ echo -e "${GREEN}🚀 Pterodactyl ${PANEL_VERSION} — Deployment Complete!${RES
 line
 echo -e "${WHITE}  Panel URL   :${RESET} ${CYAN}https://${DOMAIN}${RESET}"
 echo -e "${WHITE}  PHP Version :${RESET} ${WHITE}${PHP_VERSION}${RESET}"
+line
+echo -e "${PURPLE}  ── PANEL LOGIN CREDENTIALS ──${RESET}"
+echo -e "${WHITE}  Email       :${RESET} ${CYAN}${ADMIN_EMAIL}${RESET}"
+echo -e "${WHITE}  First Name  :${RESET} ${WHITE}${ADMIN_FNAME}${RESET}"
+echo -e "${WHITE}  Last Name   :${RESET} ${WHITE}${ADMIN_LNAME}${RESET}"
+echo -e "${WHITE}  Username    :${RESET} ${WHITE}${ADMIN_USERNAME}${RESET}"
+echo -e "${WHITE}  Password    :${RESET} ${YELLOW}${ADMIN_PASSWORD}${RESET}"
+line
+echo -e "${PURPLE}  ── DATABASE CREDENTIALS ──${RESET}"
 echo -e "${WHITE}  DB Name     :${RESET} ${WHITE}${DB_NAME}${RESET}"
 echo -e "${WHITE}  DB User     :${RESET} ${WHITE}${DB_USER}${RESET}"
 echo -e "${WHITE}  DB Password :${RESET} ${YELLOW}${DB_PASS}${RESET}"
 line
 echo -e "${GRAY}  SYSTEM: STABLE | QUEUE: ACTIVE | DATABASE: CONNECTED${RESET}"
 echo ""
-warn "Save your DB password above — it will not be shown again!"
+warn "Save your credentials above — they will not be shown again!"
 echo ""
 info "To change domain or set up real SSL later, run: ssl.sh"
 echo ""
