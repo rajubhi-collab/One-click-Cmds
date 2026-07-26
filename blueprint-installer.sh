@@ -1,198 +1,385 @@
 #!/bin/bash
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-CYAN='\033[0;36m'
-MAGENTA='\033[0;35m'
-WHITE='\033[1;37m'
-NC='\033[0m' # No Color
+# ==========================================
+#  RAJBHAI — BLUEPRINT CONTROL HUB
+#  Fresh Install • Rebuild • Fix • HyperV1
+#  Reinstall • Update
+# ==========================================
 
-# Function to print section headers
-print_header() {
-    echo -e "\n${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${CYAN} $1 ${NC}"
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}\n"
+# --- Colors ---
+R="\e[31m";  G="\e[32m";  Y="\e[33m"
+B="\e[34m";  M="\e[35m";  C="\e[36m"
+W="\e[97m";  N="\e[0m"
+BR="\e[1;31m"; BG="\e[1;32m"; BY="\e[1;33m"
+BB="\e[1;34m"; BM="\e[1;35m"; BC="\e[1;36m"
+BW="\e[1;97m"
+BOLD="\e[1m"; DIM="\e[2m"
+
+# --- Trap Ctrl+C ---
+trap 'echo -e "\n${BR} [!] Force exit detected.${N}"; exit 1' SIGINT
+
+# --- Root Check ---
+if [[ $EUID -ne 0 ]]; then
+    echo -e "${BR}  ✖ Please run as root!${N}"
+    exit 1
+fi
+
+# ==========================================
+# UI HELPERS
+# ==========================================
+print_center() {
+    local text="$1" width=60
+    local pad=$(( (width - ${#text}) / 2 ))
+    printf "%*s%s%*s\n" $pad "" "$text" $pad ""
 }
 
-# Function to print status messages
-print_status() {
-    echo -e "${YELLOW}⏳ $1...${NC}"
+header() {
+    clear
+    echo -e "${BC}${BOLD}"
+    echo " ╔══════════════════════════════════════════════════════════╗"
+    echo " ║                                                          ║"
+    printf " ║${BW}%-58s${BC}║\n" "$(print_center "⚡ BLUEPRINT CONTROL HUB ⚡")"
+    echo " ║                                                          ║"
+    printf " ║${B}%-58s${BC}║\n" "$(print_center "Made By - RAJBHAI")"
+    echo " ║                                                          ║"
+    echo " ╚══════════════════════════════════════════════════════════╝"
+    echo -e "${N}"
+    echo -e " ${B}User:${N} $(whoami)   ${B}Host:${N} $(hostname)   ${B}Time:${N} $(date +'%H:%M')"
+    echo -e "${C} ──────────────────────────────────────────────────────────${N}"
 }
 
-print_success() {
-    echo -e "${GREEN}✅ $1${NC}"
+pause() {
+    echo ""
+    echo -e "${B} ──────────────────────────────────────────────────────────${N}"
+    read -rp " ↩  Press Enter to return to main menu..."
 }
 
-print_error() {
-    echo -e "${RED}❌ $1${NC}"
-}
+step()   { echo -e "\n${BC}${BOLD}▶${N} ${BW}$1${N}"; echo -e "  ${DIM}╰─ ${W}$2${N}"; }
+ok()     { echo -e "  ${G}✓${N} ${G}$1${N}"; }
+warn()   { echo -e "  ${Y}⚠${N} ${Y}$1${N}"; }
+fail()   { echo -e "  ${R}✗${N} ${R}$1${N}"; echo -e "${Y}  Continuing in 3 seconds...${N}"; sleep 3; }
+info()   { echo -e "  ${B}ℹ${N} ${B}$1${N}"; }
+divider(){ echo -e "${M}${DIM}  ────────────────────────────────────────────────${N}"; }
 
-# Function to animate progress
-animate_progress() {
-    local pid=$1
-    local delay=0.1
-    local spinstr='|/-\'
-    
-    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
-        local temp=${spinstr#?}
-        printf " [%c]  " "$spinstr"
-        local spinstr=$temp${spinstr%"$temp"}
+spinner() {
+    local pid=$1 delay=0.1 spinstr='⣾⣽⣻⢿⡿⣟⣯⣷'
+    while kill -0 "$pid" 2>/dev/null; do
+        local tmp=${spinstr#?}
+        printf " [%c] " "$spinstr"
+        spinstr=$tmp${spinstr%"$tmp"}
         sleep $delay
-        printf "\b\b\b\b\b\b"
+        printf "\b\b\b\b\b"
     done
     printf "    \b\b\b\b"
 }
 
-# Welcome animation with RAJBHAI Branding
-welcome_animation() {
-    clear
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${CYAN}"
-    echo "██████╗  █████╗      ██╗██████╗ ██╗  ██╗ █████╗ ██╗"
-    echo "██╔══██╗██╔══██╗     ██║██╔══██╗██║  ██║██╔══██╗██║"
-    echo "██████╔╝███████║     ██║██████╔╝███████║███████║██║"
-    echo "██╔══██╗██╔══██║██   ██║██╔══██╗██╔══██║██╔══██║██║"
-    echo "██║  ██║██║  ██║╚██████╔╝██████╔╝██║  ██║██║  ██║██║"
-    echo "╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝"
-    echo -e "${NC}"
-    echo -e "${CYAN}              Blueprint Installer${NC}"
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    sleep 2
+panel_check() {
+    if [ ! -d "/var/www/pterodactyl" ]; then
+        fail "Pterodactyl panel not found at /var/www/pterodactyl"
+        exit 1
+    fi
+    ok "Pterodactyl panel found"
 }
 
-# Function: Install (Fresh Setup)
+# ==========================================
+# ACTION 1 — FRESH INSTALL BLUEPRINT
+# ==========================================
 install_blueprint() {
-    print_header "FRESH INSTALLATION"
-    
-    if [ "$EUID" -ne 0 ]; then
-        print_error "Please run this script as root or with sudo"
-        return 1
-    fi
+    header
+    echo -e " ${BG}[ FRESH INSTALL ]${N} ${BW}Blueprint Framework — Full Auto Setup${N}\n"
+    divider
 
-    print_status "Starting Fresh Install for Blueprint"
+    step "System Check" "Verifying prerequisites"
+    panel_check
+    ok "Running as root"
+    divider
 
-    # --- Step 1: Install Node.js 20.x ---
-    print_header "INSTALLING NODE.JS 20.x"
-    print_status "Installing required packages"
-    sudo apt-get install -y ca-certificates curl gnupg > /dev/null 2>&1 &
-    animate_progress $! "Installing dependencies"
-    
-    print_status "Setting up Node.js repository"
-    sudo mkdir -p /etc/apt/keyrings
+    # Node.js 20.x
+    step "Node.js 20.x" "Installing Node.js runtime"
+    info "Installing base packages"
+    apt-get install -y ca-certificates curl gnupg > /dev/null 2>&1 &
+    spinner $!
+
+    mkdir -p /etc/apt/keyrings
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | \
-      sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg > /dev/null 2>&1
-    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | \
-      sudo tee /etc/apt/sources.list.d/nodesource.list > /dev/null 2>&1
-      
-    print_status "Updating package lists"
-    sudo apt-get update > /dev/null 2>&1 &
-    animate_progress $! "Updating package lists"
-    
-    print_status "Installing Node.js"
-    sudo apt-get install -y nodejs > /dev/null 2>&1 &
-    animate_progress $! "Installing Node.js"
+        gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg 2>/dev/null
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" \
+        > /etc/apt/sources.list.d/nodesource.list
 
-    # --- Step 2: Install Yarn & Dependencies ---
-    print_header "INSTALLING DEPENDENCIES"
-    print_status "Installing Yarn"
+    info "Updating package lists"
+    apt-get update > /dev/null 2>&1 &
+    spinner $!
+
+    info "Installing Node.js"
+    apt-get install -y nodejs > /dev/null 2>&1 &
+    spinner $!
+    ok "Node.js installed"
+    divider
+
+    # Yarn & extras
+    step "Dependencies" "Yarn, zip, git, wget"
     npm i -g yarn > /dev/null 2>&1 &
-    animate_progress $! "Installing Yarn"
+    spinner $!
+    apt install -y zip unzip git curl wget > /dev/null 2>&1 &
+    spinner $!
 
-    print_status "Changing to panel directory"
-    cd /var/www/pterodactyl || { print_error "Panel directory not found!"; return 1; }
-    
-    print_status "Installing Yarn dependencies"
+    cd /var/www/pterodactyl || { fail "Panel directory not found!"; pause; return; }
     yarn > /dev/null 2>&1 &
-    animate_progress $! "Installing Yarn dependencies"
+    spinner $!
+    ok "Dependencies ready"
+    divider
 
-    print_status "Installing additional packages"
-    sudo apt install -y zip unzip git curl wget > /dev/null 2>&1 &
-    animate_progress $! "Installing additional packages"
+    # Download Blueprint
+    step "Blueprint Framework" "Fetching latest release from GitHub"
+    PT_DIR="/var/www/pterodactyl"
+    DOWNLOAD_URL=$(curl -s https://api.github.com/repos/BlueprintFramework/framework/releases/latest \
+        | grep 'browser_download_url' | grep 'release.zip' | cut -d '"' -f 4)
 
-    # --- Step 3: Download and Extract Release ---
-    print_header "DOWNLOADING BLUEPRINT FRAMEWORK"
-    print_status "Downloading latest release"
-    # Ensure PTERODACTYL_DIRECTORY is set or default to current
-    PDIR=${PTERODACTYL_DIRECTORY:-"/var/www/pterodactyl"}
-    wget "$(curl -s https://api.github.com/repos/BlueprintFramework/framework/releases/latest | grep 'browser_download_url' | grep 'release.zip' | cut -d '"' -f 4)" -O "$PDIR/release.zip"
-    
-    print_status "Extracting release files"
-    unzip -o release.zip > /dev/null 2>&1 &
-    animate_progress $! "Extracting files"
-
-    # --- Step 4: Run Blueprint Installer ---
-    print_header "RUNNING BLUEPRINT INSTALLER"
-    if [ ! -f "blueprint.sh" ]; then
-        print_error "blueprint.sh not found"
-        return 1
+    if [[ -z "$DOWNLOAD_URL" ]]; then
+        fail "Could not fetch download URL from GitHub API"
+        pause; return
     fi
 
-    print_status "Making blueprint.sh executable"
-    chmod +x blueprint.sh
-    bash blueprint.sh
+    info "Downloading release..."
+    wget -q "$DOWNLOAD_URL" -O "$PT_DIR/release.zip" &
+    spinner $!
+    ok "Downloaded"
+
+    info "Extracting files"
+    unzip -o "$PT_DIR/release.zip" -d "$PT_DIR" > /dev/null 2>&1 &
+    spinner $!
+    ok "Extracted"
+    divider
+
+    # Configure
+    step "Configuration" "Generating .blueprintrc"
+    cat <<EOF > "$PT_DIR/.blueprintrc"
+WEBUSER="www-data";
+OWNERSHIP="www-data:www-data";
+USERSHELL="/bin/bash";
+EOF
+    chmod +x "$PT_DIR/blueprint.sh"
+    chown -R www-data:www-data "$PT_DIR"
+    ok "Config generated"
+    divider
+
+    # Install
+    step "Installer" "Running Blueprint internal installer"
+    if [ ! -f "$PT_DIR/blueprint.sh" ]; then
+        fail "blueprint.sh not found after extraction"
+        pause; return
+    fi
+    bash "$PT_DIR/blueprint.sh"
+
+    echo ""
+    echo -e "${BG}"
+    echo "  ╔══════════════════════════════════════════════════╗"
+    echo "  ║         🎉 BLUEPRINT INSTALL COMPLETE!           ║"
+    echo "  ║   Blueprint Framework is now active on panel.    ║"
+    echo "  ╚══════════════════════════════════════════════════╝"
+    echo -e "${N}"
+    pause
 }
 
-# Function: Reinstall
+# ==========================================
+# ACTION 2 — FRESH REBUILD (Blueprint 2)
+# ==========================================
+install_blueprint2() {
+    header
+    echo -e " ${BY}[ FRESH REBUILD ]${N} ${BW}Blueprint 2 — Clean Rebuild Process${N}\n"
+    divider
+
+    step "System Check" "Verifying prerequisites"
+    panel_check
+    divider
+
+    PT_DIR="/var/www/pterodactyl"
+
+    step "Dependencies" "Installing system packages"
+    apt update -y -q
+    apt install -y curl wget unzip ca-certificates git gnupg zip -q
+    ok "Dependencies installed"
+
+    step "Node.js & Yarn" "Configuring runtime environment"
+    mkdir -p /etc/apt/keyrings
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | \
+        gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg 2>/dev/null
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" \
+        > /etc/apt/sources.list.d/nodesource.list
+    apt update -y -q
+    apt install -y nodejs -q
+    npm i -g yarn
+    ok "Node.js & Yarn ready"
+
+    step "Blueprint Framework" "Fetching latest release"
+    cd "$PT_DIR" || { fail "Panel directory not found!"; pause; return; }
+    DOWNLOAD_URL=$(curl -s https://api.github.com/repos/BlueprintFramework/framework/releases/latest \
+        | grep 'browser_download_url' | grep 'release.zip' | cut -d '"' -f 4)
+    wget -q "$DOWNLOAD_URL" -O "$PT_DIR/release.zip"
+    unzip -o -q release.zip
+    ok "Files extracted"
+
+    step "Configuration" "Generating .blueprintrc"
+    cat <<EOF > "$PT_DIR/.blueprintrc"
+WEBUSER="www-data";
+OWNERSHIP="www-data:www-data";
+USERSHELL="/bin/bash";
+EOF
+    chmod +x "$PT_DIR/blueprint.sh"
+    chown -R www-data:www-data "$PT_DIR"
+    ok "Config generated"
+
+    step "Installer" "Running Blueprint installer"
+    bash "$PT_DIR/blueprint.sh"
+
+    echo ""
+    echo -e "${BG}"
+    echo "  ╔══════════════════════════════════════════════════╗"
+    echo "  ║       🎉 BLUEPRINT REBUILD COMPLETE!             ║"
+    echo "  ╚══════════════════════════════════════════════════╝"
+    echo -e "${N}"
+    pause
+}
+
+# ==========================================
+# ACTION 3 — AUTO FIX / REPAIR
+# ==========================================
+autofix() {
+    header
+    echo -e " ${BM}[ AUTO FIX ]${N} ${BW}Attempting to repair Blueprint installation...${N}\n"
+    divider
+
+    step "System Check" "Verifying prerequisites"
+    panel_check
+    divider
+
+    step "Repair" "Running blueprint -rerun-install"
+    cd /var/www/pterodactyl || { fail "Panel directory not found!"; pause; return; }
+    blueprint -rerun-install
+    ok "Repair complete"
+
+    step "Permissions" "Resetting file ownership"
+    chown -R www-data:www-data /var/www/pterodactyl/*
+    ok "Ownership reset"
+
+    step "Cache" "Clearing Laravel caches"
+    php artisan view:clear
+    php artisan config:clear
+    php artisan cache:clear
+    ok "Caches cleared"
+
+    step "Queue" "Restarting queue worker"
+    php artisan queue:restart
+    ok "Queue restarted"
+
+    echo ""
+    ok "Auto fix completed!"
+    pause
+}
+
+# ==========================================
+# ACTION 4 — HYPERV1
+# ==========================================
+install_hyperv1() {
+    header
+    echo -e " ${BM}[ HYPERV1 ]${N} ${BW}HyperV1 Installer${N}\n"
+    divider
+
+    step "HyperV1" "Downloading and running installer"
+    wget -O /tmp/hyperv1_installer.sh https://r2.rolexdev.tech/hyperv1/installer.sh
+    if [ ! -f /tmp/hyperv1_installer.sh ]; then
+        fail "Failed to download HyperV1 installer"
+        pause; return
+    fi
+    chmod +x /tmp/hyperv1_installer.sh
+    bash /tmp/hyperv1_installer.sh
+    rm -f /tmp/hyperv1_installer.sh
+
+    pause
+}
+
+# ==========================================
+# ACTION 5 — REINSTALL (RERUN ONLY)
+# ==========================================
 reinstall_blueprint() {
-    print_header "REINSTALLING BLUEPRINT"
-    print_status "Starting reinstallation"
-    blueprint -rerun-install > /dev/null 2>&1 &
-    animate_progress $! "Reinstalling"
+    header
+    echo -e " ${BC}[ REINSTALL ]${N} ${BW}Rerunning Blueprint install script only...${N}\n"
+    divider
+
+    step "System Check" "Verifying prerequisites"
+    panel_check
+    divider
+
+    step "Reinstall" "Running blueprint -rerun-install"
+    cd /var/www/pterodactyl || { fail "Panel directory not found!"; pause; return; }
+    blueprint -rerun-install &
+    spinner $!
+    ok "Reinstall complete"
+
+    pause
 }
 
-# Function: Update
+# ==========================================
+# ACTION 6 — UPDATE BLUEPRINT
+# ==========================================
 update_blueprint() {
-    print_header "UPDATING BLUEPRINT"
-    print_status "Starting update"
-    blueprint -upgrade > /dev/null 2>&1 &
-    animate_progress $! "Updating"
+    header
+    echo -e " ${BY}[ UPDATE ]${N} ${BW}Upgrading Blueprint Framework to latest...${N}\n"
+    divider
+
+    step "System Check" "Verifying prerequisites"
+    panel_check
+    divider
+
+    step "Update" "Running blueprint -upgrade"
+    cd /var/www/pterodactyl || { fail "Panel directory not found!"; pause; return; }
+    blueprint -upgrade &
+    spinner $!
+    ok "Update complete"
+
+    pause
 }
 
-# Function to display the main menu
+# ==========================================
+# MAIN MENU
+# ==========================================
 show_menu() {
-    clear
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${CYAN}           🔧 BLUEPRINT INSTALLER               ${NC}"
-    echo -e "${CYAN}                BY RAJBHAI                      ${NC}"
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e ""
-    echo -e "${WHITE}╔═══════════════════════════════════════════════╗${NC}"
-    echo -e "${WHITE}║                📋 MAIN MENU                   ║${NC}"
-    echo -e "${WHITE}╠═══════════════════════════════════════════════╣${NC}"
-    echo -e "${WHITE}║   ${GREEN}1)${NC} ${CYAN}Fresh Install Blueprint${NC}               ${WHITE}║${NC}"
-    echo -e "${WHITE}║   ${GREEN}2)${NC} ${CYAN}Reinstall (Rerun Only)${NC}                ${WHITE}║${NC}"
-    echo -e "${WHITE}║   ${GREEN}3)${NC} ${CYAN}Update Blueprint Framework${NC}            ${WHITE}║${NC}"
-    echo -e "${WHITE}║   ${GREEN}0)${NC} ${RED}Exit${NC}                               ${WHITE}║${NC}"
-    echo -e "${WHITE}╚═══════════════════════════════════════════════╝${NC}"
-    echo -e ""
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${YELLOW}📝 Select an option [0-3]: ${NC}"
+    header
+    echo -e " ${BW} SELECT AN OPTION:${N}\n"
+    echo -e "  ${BG}[ 1 ]${N}  🚀  Fresh Install Blueprint"
+    echo -e "  ${BY}[ 2 ]${N}  ⚡  Fresh Rebuild  ${DIM}(Blueprint 2)${N}"
+    echo -e "  ${BM}[ 3 ]${N}  🛠  Auto Fix / Repair"
+    echo -e "  ${BM}[ 4 ]${N}  🔧  HyperV1 Installer"
+    echo -e "  ${BC}[ 5 ]${N}  🔄  Reinstall  ${DIM}(Rerun Only)${N}"
+    echo -e "  ${BB}[ 6 ]${N}  ⬆  Update Blueprint Framework"
+    echo ""
+    echo -e "  ${BR}[ 0 ]${N}  ❌  Exit"
+    echo -e "\n${C} ──────────────────────────────────────────────────────────${N}"
 }
 
-# Main execution
-welcome_animation
-
+# ==========================================
+# EXECUTION LOOP
+# ==========================================
 while true; do
     show_menu
-    read -r choice
-    
-    case $choice in
+    read -rp " 👉 Enter your choice: " opt
+
+    case "$opt" in
         1) install_blueprint ;;
-        2) reinstall_blueprint ;;
-        3) update_blueprint ;;
-        0) 
-            echo -e "${GREEN}Exiting Installer...${NC}"
-            exit 0 
+        2) install_blueprint2 ;;
+        3) autofix ;;
+        4) install_hyperv1 ;;
+        5) reinstall_blueprint ;;
+        6) update_blueprint ;;
+        0)
+            echo -e "\n${M}  👋 Goodbye — RAJBHAI Blueprint Hub${N}"
+            sleep 0.5
+            clear
+            exit 0
             ;;
-        *) 
-            print_error "Invalid option!"
-            sleep 2
+        *)
+            echo -e "\n${BR}  ❌ Invalid option, try again.${N}"
+            sleep 1
             ;;
     esac
-    
-    echo -e ""
-    read -p "$(echo -e "${YELLOW}Press Enter to continue...${NC}")" -n 1
 done
