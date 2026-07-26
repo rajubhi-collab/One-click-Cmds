@@ -296,6 +296,189 @@ update_blueprint() {
 }
 
 # ==========================================
+# ACTION 7 — UNINSTALL BLUEPRINT
+# ==========================================
+uninstall_blueprint() {
+    while true; do
+        banner
+        echo -e "${CYAN}╔══════════════════════════════════════════════════╗${NC}"
+        echo -e "${CYAN}║${NC}      ${BOLD}${RED}🗑  UNINSTALL BLUEPRINT${NC}                    ${CYAN}║${NC}"
+        echo -e "${CYAN}╠══════════════════════════════════════════════════╣${NC}"
+        echo -e "${CYAN}║${NC}  ${YELLOW}[1]${NC} Remove a Specific Extension"
+        echo -e "${CYAN}║${NC}  ${YELLOW}[2]${NC} Remove ALL Extensions"
+        echo -e "${CYAN}║${NC}  ${RED}[3]${NC} Remove Blueprint Framework Entirely"
+        echo -e "${CYAN}║${NC}  ${WHITE}[0]${NC} Back"
+        echo -e "${CYAN}╚══════════════════════════════════════════════════╝${NC}"
+        echo ""
+        read -p "  Select → " sub
+
+        case $sub in
+            # ── Remove one extension ─────────────────────────────
+            1)
+                banner
+                echo -e "${CYAN}╔══════════════════════════════════════════════════╗${NC}"
+                echo -e "${CYAN}║${NC}      ${BOLD}${WHITE}🗑  REMOVE EXTENSION${NC}                       ${CYAN}║${NC}"
+                echo -e "${CYAN}╚══════════════════════════════════════════════════╝${NC}"
+                echo ""
+                panel_check || { pause; continue; }
+
+                EXT_DIR="/var/www/pterodactyl/.blueprint/extensions"
+                if [ ! -d "$EXT_DIR" ] || [ -z "$(ls -A "$EXT_DIR" 2>/dev/null)" ]; then
+                    warn "No Blueprint extensions are currently installed."
+                    pause; continue
+                fi
+
+                echo -e "  ${CYAN}Installed extensions:${NC}"
+                echo ""
+                mapfile -t EXTS < <(ls "$EXT_DIR")
+                for i in "${!EXTS[@]}"; do
+                    echo -e "  ${GREEN}[$((i+1))]${NC} ${EXTS[$i]}"
+                done
+                echo ""
+                read -p "  Enter extension number to remove: " EXT_NUM
+
+                if ! [[ "$EXT_NUM" =~ ^[0-9]+$ ]] || \
+                   [ "$EXT_NUM" -lt 1 ] || [ "$EXT_NUM" -gt "${#EXTS[@]}" ]; then
+                    fail "Invalid selection."
+                    pause; continue
+                fi
+
+                EXT_NAME="${EXTS[$((EXT_NUM-1))]}"
+                echo ""
+                echo -e "  ${RED}⚠ About to remove extension: ${BOLD}${EXT_NAME}${NC}"
+                read -p "  Confirm? (y/N): " CONFIRM
+                if [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]]; then
+                    info "Cancelled."; pause; continue
+                fi
+
+                echo ""
+                info "Removing extension ${EXT_NAME}..."
+                cd /var/www/pterodactyl || { fail "Panel directory not found!"; pause; continue; }
+                blueprint -remove "$EXT_NAME" &
+                spinner $!
+
+                if [ $? -eq 0 ]; then
+                    ok "Extension '${EXT_NAME}' removed successfully!"
+                else
+                    fail "Removal may have encountered issues. Check output above."
+                fi
+                pause
+                ;;
+
+            # ── Remove ALL extensions ────────────────────────────
+            2)
+                banner
+                echo -e "${CYAN}╔══════════════════════════════════════════════════╗${NC}"
+                echo -e "${CYAN}║${NC}      ${BOLD}${WHITE}🗑  REMOVE ALL EXTENSIONS${NC}                  ${CYAN}║${NC}"
+                echo -e "${CYAN}╚══════════════════════════════════════════════════╝${NC}"
+                echo ""
+                panel_check || { pause; continue; }
+
+                EXT_DIR="/var/www/pterodactyl/.blueprint/extensions"
+                if [ ! -d "$EXT_DIR" ] || [ -z "$(ls -A "$EXT_DIR" 2>/dev/null)" ]; then
+                    warn "No Blueprint extensions are currently installed."
+                    pause; continue
+                fi
+
+                mapfile -t ALL_EXTS < <(ls "$EXT_DIR")
+                echo -e "  ${YELLOW}⚠ This will remove ALL ${#ALL_EXTS[@]} extension(s):${NC}"
+                for ext in "${ALL_EXTS[@]}"; do
+                    echo -e "    ${RED}•${NC} $ext"
+                done
+                echo ""
+                read -p "  Are you sure? (y/N): " CONFIRM
+                if [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]]; then
+                    info "Cancelled."; pause; continue
+                fi
+
+                echo ""
+                cd /var/www/pterodactyl || { fail "Panel directory not found!"; pause; continue; }
+                FAILED=0
+                for ext in "${ALL_EXTS[@]}"; do
+                    info "Removing: $ext"
+                    blueprint -remove "$ext" &
+                    spinner $!
+                    if [ $? -eq 0 ]; then
+                        ok "Removed: $ext"
+                    else
+                        warn "Issue removing: $ext"
+                        FAILED=$((FAILED+1))
+                    fi
+                done
+
+                echo ""
+                if [ "$FAILED" -eq 0 ]; then
+                    ok "All extensions removed successfully!"
+                else
+                    warn "$FAILED extension(s) had issues. Check output above."
+                fi
+                pause
+                ;;
+
+            # ── Remove Blueprint framework entirely ──────────────
+            3)
+                banner
+                echo -e "${RED}╔══════════════════════════════════════════════════╗${NC}"
+                echo -e "${RED}║${NC}   ${BOLD}${RED}⛔  REMOVE BLUEPRINT FRAMEWORK${NC}              ${RED}║${NC}"
+                echo -e "${RED}║${NC}   ${YELLOW}This will remove Blueprint completely!${NC}         ${RED}║${NC}"
+                echo -e "${RED}║${NC}   ${YELLOW}Extensions and custom code will be lost.${NC}       ${RED}║${NC}"
+                echo -e "${RED}╚══════════════════════════════════════════════════╝${NC}"
+                echo ""
+                read -p "  Type 'CONFIRM' to proceed: " CONFIRM
+                if [[ "$CONFIRM" != "CONFIRM" ]]; then
+                    info "Cancelled."; pause; continue
+                fi
+
+                panel_check || { pause; continue; }
+                cd /var/www/pterodactyl || { fail "Panel directory not found!"; pause; continue; }
+
+                # Step 1: Remove all extensions first
+                EXT_DIR="/var/www/pterodactyl/.blueprint/extensions"
+                if [ -d "$EXT_DIR" ] && [ -n "$(ls -A "$EXT_DIR" 2>/dev/null)" ]; then
+                    info "Removing all installed extensions first..."
+                    for ext in $(ls "$EXT_DIR"); do
+                        blueprint -remove "$ext" > /dev/null 2>&1 &
+                        spinner $!
+                        ok "Removed extension: $ext"
+                    done
+                fi
+
+                # Step 2: Remove Blueprint files
+                info "Removing Blueprint files..."
+                rm -f /usr/local/bin/blueprint
+                rm -f /var/www/pterodactyl/blueprint.sh
+                rm -f /var/www/pterodactyl/.blueprintrc
+                rm -f /var/www/pterodactyl/release.zip
+                rm -rf /var/www/pterodactyl/.blueprint
+                ok "Blueprint files removed"
+
+                # Step 3: Rebuild panel assets
+                info "Rebuilding panel assets..."
+                php artisan view:clear > /dev/null 2>&1
+                php artisan config:clear > /dev/null 2>&1
+                php artisan cache:clear > /dev/null 2>&1
+                yarn build:production > /dev/null 2>&1 &
+                spinner $!
+                ok "Panel assets rebuilt"
+
+                # Step 4: Fix ownership
+                info "Resetting file ownership..."
+                chown -R www-data:www-data /var/www/pterodactyl
+                ok "Ownership reset"
+
+                echo ""
+                echo -e "${GREEN}  ✔ Blueprint framework removed successfully!${NC}"
+                echo -e "${CYAN}  Panel has been restored to its original state.${NC}"
+                pause
+                ;;
+
+            0) return ;;
+            *) echo -e "${RED}  Invalid Option!${NC}"; sleep 1 ;;
+        esac
+    done
+}
+
+# ==========================================
 # MAIN MENU
 # ==========================================
 while true; do
@@ -325,6 +508,7 @@ while true; do
     echo -e "${CYAN}║${NC}  ${YELLOW}[4]${NC} HyperV1 Installer  ${GRAY}:: HyperV1 Setup${NC}"
     echo -e "${CYAN}║${NC}  ${BLUE}[5]${NC} Reinstall          ${GRAY}:: Rerun Only${NC}"
     echo -e "${CYAN}║${NC}  ${BLUE}[6]${NC} Update Framework   ${GRAY}:: Latest Release${NC}"
+    echo -e "${CYAN}║${NC}  ${RED}[7]${NC} Uninstall          ${GRAY}:: Remove Extension / Framework${NC}"
     echo -e "${CYAN}║${NC}  ${WHITE}[0]${NC} Exit"
     echo -e "${CYAN}╚══════════════════════════════════════════════════╝${NC}"
     echo ""
@@ -337,6 +521,7 @@ while true; do
         4) install_hyperv1 ;;
         5) reinstall_blueprint ;;
         6) update_blueprint ;;
+        7) uninstall_blueprint ;;
         0)
             echo -e "${GREEN}  Exiting — RAJBHAI Blueprint Hub${NC}"
             exit 0
