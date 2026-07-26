@@ -84,10 +84,10 @@ ptero_menu() {
 
         case $opt in
             1)
-                bash <(curl -fsSL https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/install.sh)
+                bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/install.sh)
                 ;;
             2)
-                bash <(curl -fsSL https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/wings)
+                bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/wings)
                 ;;
             3)
                 if [ ! -d /var/www/pterodactyl ]; then
@@ -118,7 +118,7 @@ ptero_menu() {
                 read -p "  Press Enter to continue..."
                 ;;
             5)
-                bash <(curl -fsSL https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ssl.sh)
+                bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ssl.sh)
                 read -p "  Press Enter to continue..."
                 ;;
             6)
@@ -197,7 +197,7 @@ tools_menu(){
         case $t in
             1) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/tools/root.sh); pause ;;
             2) curl -fsSL https://tailscale.com/install.sh | sh; pause ;;
-            3) bash <(curl -fsSL https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/ssh.sh); pause ;;
+            3) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ssh.sh); pause ;;
             4) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/tools/SYSTEM.sh); pause ;;
             5) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/lxd%20installer); pause ;;
             6) bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/tools/rdp.sh); pause ;;
