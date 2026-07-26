@@ -115,54 +115,65 @@ line
 echo -e "${PURPLE}>> EXECUTING ROOT PROTOCOLS...${RESET}"
 sleep 1
 
-# Add your actual install logic below this line
+# -------- ROOT CHECK --------
+if [[ $EUID -ne 0 ]]; then
+    fail "This script must be run as root!"
+    exit 1
+fi
+
+PHP_VERSION="8.3"
+
 step "Updating system packages..."
 # --- Dependencies ---
-apt update && apt install -y curl apt-transport-https ca-certificates gnupg unzip git tar sudo lsb-release
+apt update -y && apt install -y curl apt-transport-https ca-certificates gnupg unzip git tar sudo lsb-release software-properties-common
+ok "Base packages ready."
 
 # Detect OS
-OS=$(lsb_release -is | tr '[:upper:]' '[:lower:]')
+OS=$(lsb_release -is 2>/dev/null | tr '[:upper:]' '[:lower:]')
+CODENAME=$(lsb_release -cs 2>/dev/null)
 
 if [[ "$OS" == "ubuntu" ]]; then
     echo "✅ Detected Ubuntu. Adding PPA for PHP..."
-    apt install -y software-properties-common
     LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php
 elif [[ "$OS" == "debian" ]]; then
-    echo "✅ Detected Debian. Skipping PPA and adding PHP repo manually..."
-    # Add SURY PHP repo for Debian
+    echo "✅ Detected Debian. Adding PHP repo..."
     curl -fsSL https://packages.sury.org/php/apt.gpg | gpg --dearmor -o /usr/share/keyrings/sury-php.gpg
-    echo "deb [signed-by=/usr/share/keyrings/sury-php.gpg] https://packages.sury.org/php/ $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/sury-php.list
+    echo "deb [signed-by=/usr/share/keyrings/sury-php.gpg] https://packages.sury.org/php/ ${CODENAME} main" | tee /etc/apt/sources.list.d/sury-php.list
 fi
 
 # Add Redis GPG key and repo
-curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
-echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+curl -fsSL https://packages.redis.io/gpg | gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb ${CODENAME} main" | tee /etc/apt/sources.list.d/redis.list
 
-apt update
+apt update -y
 
 # --- Install PHP + extensions ---
-apt install -y php8.3 php8.3-{cli,fpm,common,mysql,mbstring,bcmath,xml,zip,curl,gd,tokenizer,ctype,simplexml,dom} mariadb-server nginx redis-server
-sleep 1
-ok "System updated."
+apt install -y php${PHP_VERSION} php${PHP_VERSION}-{cli,fpm,common,mysql,mbstring,bcmath,xml,zip,curl,gd,tokenizer,ctype,simplexml,dom} mariadb-server nginx redis-server cron
+ok "PHP ${PHP_VERSION}, MariaDB, Nginx, Redis installed."
+
 step "Installing dependencies..."
 # --- Install Composer ---
-curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # --- Download Pterodactyl Panel ---
 mkdir -p /var/www/pterodactyl
 cd /var/www/pterodactyl
 curl -Lo panel.tar.gz https://github.com/pterodactyl/panel/releases/latest/download/panel.tar.gz
-tar -xzvf panel.tar.gz
+tar -xzf panel.tar.gz && rm -f panel.tar.gz
 chmod -R 755 storage/* bootstrap/cache/
 
 # --- MariaDB Setup ---
 DB_NAME=panel
 DB_USER=pterodactyl
-DB_PASS=yourPassword
+DB_PASS=$(tr -dc 'A-Za-z0-9!@#%^&*' < /dev/urandom | head -c 24)
+
+systemctl enable --now mariadb
+mariadb -e "DROP USER IF EXISTS '${DB_USER}'@'127.0.0.1';"
 mariadb -e "CREATE USER '${DB_USER}'@'127.0.0.1' IDENTIFIED BY '${DB_PASS}';"
-mariadb -e "CREATE DATABASE ${DB_NAME};"
-mariadb -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1' WITH GRANT OPTION;"
+mariadb -e "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;"
+mariadb -e "GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'127.0.0.1' WITH GRANT OPTION;"
 mariadb -e "FLUSH PRIVILEGES;"
+ok "Database '${DB_NAME}' created with secure random password."
 
 # --- .env Setup ---
 if [ ! -f ".env.example" ]; then
@@ -173,16 +184,15 @@ sed -i "s|APP_URL=.*|APP_URL=https://${DOMAIN}|g" .env
 sed -i "s|DB_DATABASE=.*|DB_DATABASE=${DB_NAME}|g" .env
 sed -i "s|DB_USERNAME=.*|DB_USERNAME=${DB_USER}|g" .env
 sed -i "s|DB_PASSWORD=.*|DB_PASSWORD=${DB_PASS}|g" .env
-if ! grep -q "^APP_ENVIRONMENT_ONLY=" .env; then
-    echo "APP_ENVIRONMENT_ONLY=false" >> .env
-fi
+grep -q "^APP_ENVIRONMENT_ONLY=" .env \
+    && sed -i "s|^APP_ENVIRONMENT_ONLY=.*|APP_ENVIRONMENT_ONLY=false|" .env \
+    || echo "APP_ENVIRONMENT_ONLY=false" >> .env
 
 # --- Install PHP dependencies ---
-echo "✅ Installing PHP dependencies..."
 COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
+ok "PHP dependencies installed."
 
 # --- Generate Application Key ---
-echo "✅ Generating application key..."
 php artisan key:generate --force
 
 # --- Run Migrations ---
@@ -190,23 +200,19 @@ php artisan migrate --seed --force
 
 # --- Permissions ---
 chown -R www-data:www-data /var/www/pterodactyl/*
-apt install -y cron
 systemctl enable --now cron
-(crontab -l 2>/dev/null; echo "* * * * * php /var/www/pterodactyl/artisan schedule:run >> /dev/null 2>&1") | crontab -
-sleep 1
+(crontab -l 2>/dev/null | grep -v "pterodactyl"; echo "* * * * * php /var/www/pterodactyl/artisan schedule:run >> /dev/null 2>&1") | crontab -
 ok "Dependencies installed."
-step "Generating SSL certificate..."
 
+step "Generating SSL certificate..."
 # --- Nginx Setup ---
 mkdir -p /etc/certs/panel
-cd /etc/certs/panel
 openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 \
--subj "/C=NA/ST=NA/L=NA/O=NA/CN=Generic SSL Certificate" \
--keyout privkey.pem -out fullchain.pem
-sleep 1
+    -subj "/C=NA/ST=NA/L=NA/O=Pterodactyl/CN=${DOMAIN}" \
+    -keyout /etc/certs/panel/privkey.pem -out /etc/certs/panel/fullchain.pem 2>/dev/null
 ok "SSL secured."
+
 step "Configuring NGINX..."
-sleep 1
 tee /etc/nginx/sites-available/pterodactyl.conf > /dev/null << EOF
 server {
     listen 80;

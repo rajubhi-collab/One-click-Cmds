@@ -115,7 +115,7 @@ install_blueprint() {
     apt install -y zip unzip git curl wget > /dev/null 2>&1 &
     spinner $!
     cd /var/www/pterodactyl || { fail "Panel directory not found!"; pause; return; }
-    yarn > /dev/null 2>&1 &
+    yarn install > /dev/null 2>&1 &
     spinner $!; ok "Yarn & dependencies ready"
 
     info "Fetching latest Blueprint release from GitHub..."

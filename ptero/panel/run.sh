@@ -62,41 +62,41 @@ panel_menu() {
 
         # Logic
         case $p in
-            1) 
-                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/Uninstall/unFEATHERPANEL.sh) 
+            1)
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/panel/FeatherPanel/install.sh)
                 pause ;;
-            2) 
-                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/panel/pterodactyl/run.sh) 
+            2)
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/panel/pterodactyl/run.sh)
                 pause ;;
-            3) 
+            3)
                 bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/panel/Jexactyl/run.sh)
                 pause ;;
-            4) 
-                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/Uninstall/unJexactyl.sh) 
+            4)
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/panel/Jexactyl/install.sh)
                 pause ;;
-            5) 
-                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/Uninstall/undash-3.sh) 
+            5)
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/panel/dash/os.sh)
                 pause ;;
-            6) 
-                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/Uninstall/dash-v4.sh) 
+            6)
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/panel/dashv3/os.sh)
                 pause ;;
-            7) 
-                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/Uninstall/unPaymenter.sh) 
+            7)
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/panel/Payment/run.sh)
                 pause ;;
-            8) 
-                bash <(curl -s https://raw.githubusercontent.com/nobita54/-150/refs/heads/main/Uninstall/unCtrlPanel.sh) 
+            8)
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/panel/ctrlpanel.sh)
                 pause ;;
-            9) 
-                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/Uninstall/unReviactyl.sh) 
+            9)
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/panel/reviactyl/run.sh)
                 pause ;;
-            10) 
-                bash <(curl -s https://raw.githubusercontent.com/yourlink/t-panel.sh) 
+            10)
+                bash <(curl -s https://raw.githubusercontent.com/rajubhi-collab/One-click-Cmds/refs/heads/main/ptero/tools/run.sh)
                 pause ;;
-            11) 
+            11)
                 break ;;
-            *) 
+            *)
                 echo -e "${RED}Invalid Option${NC}"
-                sleep 1 
+                sleep 1
                 ;;
         esac
     done
