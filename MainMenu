@@ -154,22 +154,25 @@ ptero_menu() {
 
 # ===================== THEME INSTALLER MENU =====================
 theme_menu() {
+    local TM_URL="https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/theme-manager.sh"
     while true; do
         banner
         echo -e "${MAGENTA}╔══════════════════════════════════════════════════╗${NC}"
         echo -e "${MAGENTA}║${NC}      ${BOLD}${WHITE}🎨 THEME INSTALLER MENU${NC}                  ${MAGENTA}║${NC}"
         echo -e "${MAGENTA}╠══════════════════════════════════════════════════╣${NC}"
-        echo -e "${MAGENTA}║${NC}  ${GREEN}[1]${NC} New Theme Manager  ${GRAY}:: Nebula/Euphoria/Tools${NC}"
-        echo -e "${MAGENTA}║${NC}  ${YELLOW}[2]${NC} Old Theme Installer ${GRAY}:: Classic Theme Script${NC}"
-        echo -e "${MAGENTA}║${NC}  ${WHITE}[3]${NC} Back"
+        echo -e "${MAGENTA}║${NC}  ${GREEN}[1]${NC} Old Theme Installer ${GRAY}:: Classic Theme Script${NC}"
+        echo -e "${MAGENTA}║${NC}  ${GREEN}[2]${NC} Theme               ${GRAY}:: Nebula / Euphoria / Refresh${NC}"
+        echo -e "${MAGENTA}║${NC}  ${YELLOW}[3]${NC} Extensions          ${GRAY}:: 11 Blueprint Extensions${NC}"
+        echo -e "${MAGENTA}║${NC}  ${WHITE}[4]${NC} Back"
         echo -e "${MAGENTA}╚══════════════════════════════════════════════════╝${NC}"
         echo ""
         read -p "  Select → " tchoice
 
         case $tchoice in
-            1) bash <(curl -fsSL https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/theme-manager.sh) ;;
-            2) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/thame/chang.sh); pause ;;
-            3) break ;;
+            1) bash <(curl -fsSL https://raw.githubusercontent.com/rajubhi-collab/Hub-of-raj/refs/heads/main/srv/thame/chang.sh); pause ;;
+            2) bash <(curl -fsSL "$TM_URL") --themes ;;
+            3) bash <(curl -fsSL "$TM_URL") --extensions ;;
+            4) break ;;
             *) echo -e "${RED}  Invalid option${NC}"; sleep 1 ;;
         esac
     done

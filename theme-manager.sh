@@ -20,6 +20,9 @@ BOLD="\e[1m"
 # --- Base URL for blueprint files ---
 BASE="https://raw.githubusercontent.com/rajbhai-collab/One-click-Cmds/refs/heads/main/extensions"
 
+# --- Argument ---
+START_MODE="${1:-}"   # --themes | --extensions | (empty = main menu)
+
 # --- Root Check ---
 if [[ $EUID -ne 0 ]]; then
     echo -e "${RED}  ✖ Please run as root!${RESET}"
@@ -296,31 +299,68 @@ uninstall_menu() {
 }
 
 # ==========================================
+# THEMES SUBMENU (called via --themes)
+# ==========================================
+themes_menu() {
+    while true; do
+        header
+        echo -e "  ${CYAN}╔══════════════════════════════════════════════╗${RESET}"
+        echo -e "  ${CYAN}║${RESET}          ${BOLD}${WHITE}🎨 THEMES${RESET}                           ${CYAN}║${RESET}"
+        echo -e "  ${CYAN}╠══════════════════════════════════════════════╣${RESET}"
+        echo -e "  ${CYAN}║${RESET}  ${GREEN}[1]${RESET} 🚀 Nebula          ${GRAY}:: Auto Install${RESET}"
+        echo -e "  ${CYAN}║${RESET}  ${GREEN}[2]${RESET} 🌈 Euphoria        ${GRAY}:: Auto Install${RESET}"
+        echo -e "  ${CYAN}║${RESET}  ${GREEN}[3]${RESET} 🔄 Refresh Theme   ${GRAY}:: Auto Install${RESET}"
+        echo -e "  ${CYAN}║${RESET}  ${RED}[4]${RESET} 🗑  Uninstall       ${GRAY}:: Remove Themes${RESET}"
+        echo -e "  ${CYAN}║${RESET}"
+        echo -e "  ${CYAN}║${RESET}  ${WHITE}[0]${RESET} Back"
+        echo -e "  ${CYAN}╚══════════════════════════════════════════════╝${RESET}"
+        echo ""
+        read -p "  Choose → " opt
+
+        case "$opt" in
+            1) install_nebula ;;
+            2) install_euphoria ;;
+            3) install_refreshtheme ;;
+            4) uninstall_menu ;;
+            0) exit 0 ;;
+            *) warn "Invalid option, try again."; sleep 1 ;;
+        esac
+    done
+}
+
+# ==========================================
 # MAIN MENU
 # ==========================================
-while true; do
-    header
-    echo -e "  ${CYAN}╔══════════════════════════════════════════════╗${RESET}"
-    echo -e "  ${CYAN}║${RESET}          ${BOLD}${WHITE}SELECT A THEME ACTION${RESET}              ${CYAN}║${RESET}"
-    echo -e "  ${CYAN}╠══════════════════════════════════════════════╣${RESET}"
-    echo -e "  ${CYAN}║${RESET}  ${GREEN}[1]${RESET} 🚀 Nebula          ${GRAY}:: Theme${RESET}"
-    echo -e "  ${CYAN}║${RESET}  ${GREEN}[2]${RESET} 🌈 Euphoria        ${GRAY}:: Theme${RESET}"
-    echo -e "  ${CYAN}║${RESET}  ${GREEN}[3]${RESET} 🔄 Refresh Theme   ${GRAY}:: Theme${RESET}"
-    echo -e "  ${CYAN}║${RESET}  ${YELLOW}[4]${RESET} 🧩 Extensions      ${GRAY}:: 11 Extensions${RESET}"
-    echo -e "  ${CYAN}║${RESET}  ${RED}[5]${RESET} 🗑  Uninstall       ${GRAY}:: Remove Themes/Extensions${RESET}"
-    echo -e "  ${CYAN}║${RESET}"
-    echo -e "  ${CYAN}║${RESET}  ${WHITE}[0]${RESET} Exit"
-    echo -e "  ${CYAN}╚══════════════════════════════════════════════╝${RESET}"
-    echo ""
-    read -p "  Choose → " opt
+main_theme_menu() {
+    while true; do
+        header
+        echo -e "  ${CYAN}╔══════════════════════════════════════════════╗${RESET}"
+        echo -e "  ${CYAN}║${RESET}          ${BOLD}${WHITE}SELECT A THEME ACTION${RESET}              ${CYAN}║${RESET}"
+        echo -e "  ${CYAN}╠══════════════════════════════════════════════╣${RESET}"
+        echo -e "  ${CYAN}║${RESET}  ${GREEN}[1]${RESET} 🎨 Theme           ${GRAY}:: Nebula/Euphoria/Refresh${RESET}"
+        echo -e "  ${CYAN}║${RESET}  ${YELLOW}[2]${RESET} 🧩 Extensions      ${GRAY}:: 11 Blueprint Extensions${RESET}"
+        echo -e "  ${CYAN}║${RESET}  ${RED}[3]${RESET} 🗑  Uninstall       ${GRAY}:: Remove Themes/Extensions${RESET}"
+        echo -e "  ${CYAN}║${RESET}"
+        echo -e "  ${CYAN}║${RESET}  ${WHITE}[0]${RESET} Exit"
+        echo -e "  ${CYAN}╚══════════════════════════════════════════════╝${RESET}"
+        echo ""
+        read -p "  Choose → " opt
 
-    case "$opt" in
-        1) install_nebula ;;
-        2) install_euphoria ;;
-        3) install_refreshtheme ;;
-        4) extensions_menu ;;
-        5) uninstall_menu ;;
-        0) echo -e "\n${CYAN}  Goodbye! 🚀${RESET}"; exit 0 ;;
-        *) warn "Invalid option, try again."; sleep 1 ;;
-    esac
-done
+        case "$opt" in
+            1) themes_menu ;;
+            2) extensions_menu ;;
+            3) uninstall_menu ;;
+            0) echo -e "\n${CYAN}  Goodbye! 🚀${RESET}"; exit 0 ;;
+            *) warn "Invalid option, try again."; sleep 1 ;;
+        esac
+    done
+}
+
+# ==========================================
+# DISPATCH
+# ==========================================
+case "$START_MODE" in
+    --themes)     themes_menu ;;
+    --extensions) extensions_menu ;;
+    *)            main_theme_menu ;;
+esac
